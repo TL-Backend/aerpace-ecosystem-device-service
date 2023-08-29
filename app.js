@@ -3,6 +3,7 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
+app.disable('x-powered-by');
 
 const { errorResponse } = require('./src/utils/responseHandler');
 const { statusCodes } = require('./src/utils/statusCodes');

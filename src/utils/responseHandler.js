@@ -20,15 +20,25 @@ const errorResponse = ({
   message = 'Internal server error',
   error = null,
 }) => {
-  code =
-    (error &&
-      ((error.error && error.error.code) || error.statusCode || error.code)) ||
-    code;
-  message =
-    message ||
-    (error && error.error && error.error.message) ||
-    (error && error.message) ||
-    '';
+  code = error
+    ? error.error
+      ? error.error.code
+        ? error.error.code
+        : code
+      : (
+          err.code
+            ? error.code
+            : code || error.statusCode
+            ? error.statusCode
+            : code
+        )
+      ? error.code
+        ? error.code
+        : code || error.statusCode
+        ? error.statusCode
+        : code
+      : code
+    : code;
 
   return res.status(code).send({
     data,
