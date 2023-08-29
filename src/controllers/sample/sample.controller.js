@@ -6,7 +6,7 @@ const {
 const { statusCodes } = require('../../utils/statusCodes');
 const { logger } = require('../../utils/logger');
 
-const sampleTest = async (req, res, next) => {
+exports.sampleTest = async (req, res, next) => {
   try {
     logger.info('success');
     return successResponse({
@@ -24,8 +24,4 @@ const sampleTest = async (req, res, next) => {
       error: err,
     });
   }
-};
-
-module.exports = {
-  sampleTest,
 };

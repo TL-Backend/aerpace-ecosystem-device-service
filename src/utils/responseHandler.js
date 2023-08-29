@@ -4,7 +4,7 @@
 
 const { statusCodes } = require('./statusCodes');
 
-const successResponse = ({
+exports.successResponse = ({
   req,
   res,
   data = {},
@@ -12,7 +12,7 @@ const successResponse = ({
   message = '',
 }) => res.status(code).send({ data, code, message });
 
-const errorResponse = ({
+exports.errorResponse = ({
   req,
   res,
   data = {},
@@ -20,34 +20,13 @@ const errorResponse = ({
   message = 'Internal server error',
   error = null,
 }) => {
-  code = error
-    ? error.error
-      ? error.error.code
-        ? error.error.code
-        : code
-      : (
-          err.code
-            ? error.code
-            : code || error.statusCode
-            ? error.statusCode
-            : code
-        )
-      ? error.code
-        ? error.code
-        : code || error.statusCode
-        ? error.statusCode
-        : code
-      : code
-    : code;
+  if (error) {
+    code = error.error?.code || error.code || error.statusCode || code;
+  }
 
   return res.status(code).send({
     data,
     code,
     message,
   });
-};
-
-module.exports = {
-  successResponse,
-  errorResponse,
 };

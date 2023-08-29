@@ -6,11 +6,7 @@ const error = (data) => {
   console.error(data);
 };
 
-const logger = {
+exports.logger = {
   info,
   error,
-};
-
-module.exports = {
-  logger,
 };

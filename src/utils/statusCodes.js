@@ -2,7 +2,7 @@
  * status codes is used to list and maintain all the possible status codes.
  */
 
-const statusCodes = {
+exports.statusCodes = {
   STATUS_CODE_INVALID_PROMPT: 113,
   STATUS_CODE_SUCCESS: 200,
   STATUS_CODE_SUCCESS_CREATED: 201,
@@ -14,8 +14,4 @@ const statusCodes = {
   STATUS_CODE_DATA_SOFT_DELETE: 421,
   STATUS_CODE_VALIDATION_FAILED: 422,
   STATUS_CODE_NOT_ACCEPTABLE: 406,
-};
-
-module.exports = {
-  statusCodes,
 };
