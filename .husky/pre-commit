@@ -1,0 +1,7 @@
+# pre commit to avoid the mistake of forgetting to apply the linter.
+
+#!/usr/bin/env sh
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run lint && npm run format && git add .
