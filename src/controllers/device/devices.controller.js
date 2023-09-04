@@ -9,12 +9,19 @@ const { getDeviceTypes } = require('./devices.helper');
 
 exports.listDevicesTypes = async (req, res, next) => {
   try {
-    const { data: device_types } = await getDeviceTypes();
-    if (device_types) {
+    const { success, errorCode, message, data } = await getDeviceTypes();
+    if (!success) {
+      return errorResponse({
+        res,
+        code: errorCode,
+        message: message,
+      });
+    }
+    if (data) {
       return successResponse({
         res,
         data: {
-          device_types,
+          device_types: data,
         },
         message: successResponses.COUNT_FETCH_SUCCESSFULL.message,
         code: statusCodes.STATUS_CODE_SUCCESS,
