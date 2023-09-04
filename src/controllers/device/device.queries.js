@@ -5,21 +5,21 @@ exports.getAllDevicesFromType = `SELECT
                 'model', json_build_object(
                     'id', dm.id,
                     'name', dm.name,
-                    'status', 'active',
+                    'status', '',
                     'variants', COALESCE(
                         (
                             SELECT json_agg(
                                 json_build_object(
                                     'id', dv.id,
                                     'name', dv.name,
-                                    'status', 'active',
+                                    'status', '',
                                     'versions', COALESCE(
                                         (
                                             SELECT json_agg(
                                                 json_build_object(
                                                     'id', dvv.id,
                                                     'name', dvv.name,
-                                                    'status', 'active'
+                                                    'status', ''
                                                 )
                                             ) 
                                             FROM aergov_device_versions AS dvv
