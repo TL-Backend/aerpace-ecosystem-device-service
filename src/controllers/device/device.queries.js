@@ -1,5 +1,43 @@
-exports.getModelsByDeviceType = `SELECT id, name FROM aergov_device_models WHERE device_type = :device_type`;
-
-exports.getVariantByModelId = `SELECT id, name FROM aergov_device_variants WHERE model_id = :modelId`;
-
-exports.getVersionByVariantId = `SELECT id, name FROM aergov_device_versions WHERE variant_id = :variantId`;
+exports.getAllDevicesFromType = `SELECT
+    COALESCE(
+        json_agg(
+            json_build_object(
+                'model', json_build_object(
+                    'id', dm.id,
+                    'name', dm.name,
+                    'status', 'active',
+                    'variants', COALESCE(
+                        (
+                            SELECT json_agg(
+                                json_build_object(
+                                    'id', dv.id,
+                                    'name', dv.name,
+                                    'status', 'active',
+                                    'versions', COALESCE(
+                                        (
+                                            SELECT json_agg(
+                                                json_build_object(
+                                                    'id', dvv.id,
+                                                    'name', dvv.name,
+                                                    'status', 'active'
+                                                )
+                                            ) 
+                                            FROM aergov_device_versions AS dvv
+                                            WHERE dvv.variant_id = dv.id
+                                        ),
+                                        '[]'
+                                    )
+                                )
+                            ) 
+                            FROM aergov_device_variants AS dv
+                            WHERE dv.model_id = dm.id
+                        ),
+                        '[]'
+                    )
+                )
+            )
+        ),
+        '[]'
+    ) AS data
+FROM aergov_device_models AS dm
+WHERE dm.device_type = :device_type`
