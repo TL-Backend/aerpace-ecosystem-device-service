@@ -2,7 +2,7 @@
  * Response handler methods to maintain common response format for all APIs.
  */
 
-const { statusCodes } = require('./statusCodes');
+const { statusCodes } = require('./statusCode');
 
 exports.successResponse = ({
   req,
@@ -19,14 +19,4 @@ exports.errorResponse = ({
   code = statusCodes.STATUS_CODE_FAILURE,
   message = 'Internal server error',
   error = null,
-}) => {
-  if (error) {
-    code = error.error?.code || error.code || error.statusCode || code;
-  }
-
-  return res.status(code).send({
-    data,
-    code,
-    message,
-  });
-};
+}) => res.status(code).send({ data, code, message });

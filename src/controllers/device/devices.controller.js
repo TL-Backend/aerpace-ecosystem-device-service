@@ -3,8 +3,8 @@ const {
   errorResponse,
   successResponse,
 } = require('../../utils/responseHandler');
-const { statusCodes } = require('../../utils/statusCodes');
-const { successResponses, errorResponses } = require('./devices.constants');
+const { statusCodes } = require('../../utils/statusCode');
+const { successResponses } = require('./devices.constants');
 const { getDeviceTypes } = require('./devices.helper');
 
 exports.listDevicesTypes = async (req, res, next) => {
