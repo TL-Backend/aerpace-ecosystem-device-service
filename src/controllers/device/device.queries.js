@@ -19,7 +19,7 @@ exports.getAllDevicesFromType = `SELECT
                                                 json_build_object(
                                                     'id', dvv.id,
                                                     'name', dvv.name,
-                                                    'status', ''
+                                                    'status', dvv.status
                                                 )
                                             ) 
                                             FROM aergov_device_versions AS dvv

@@ -4,8 +4,8 @@ const {statusCodes} = require('../../utils/statusCodes');
 const {errorMessages} = require('./device.constants');
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
     try {
-        const deviceType = request.params.device_type;
-        if (deviceType?.trim().isEmpty || typeof deviceType !== 'string') {
+        const deviceType = request.params.device_type; // Device type values are like car, drone etc..
+        if (!deviceType || typeof deviceType !== 'string' || !deviceType?.trim()) {
             throw errorMessages.INVALID_DEVICE_TYPE(deviceType);
         }
         return next();

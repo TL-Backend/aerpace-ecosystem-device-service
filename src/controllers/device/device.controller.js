@@ -8,7 +8,7 @@ const messages = require('./device.constants');
 
 exports.getDevicesList = async (request, response) => {
     try {
-        let devices = await getDevicesDataHelper(request.params.device_type);
+        let devices = await getDevicesDataHelper({deviceType:request.params.device_type});
         return successResponse({
             data: {devices: devices.data},
             req: request,

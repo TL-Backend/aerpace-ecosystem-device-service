@@ -5,7 +5,7 @@ const {
     getAllDevicesFromType
 } = require('./device.queries');
 
-exports.getDevicesDataHelper = async (deviceType) => {
+exports.getDevicesDataHelper = async ({deviceType}) => {
     try {
         const devicesQueryResult = await sequelize.query(getAllDevicesFromType, {
             replacements: {
