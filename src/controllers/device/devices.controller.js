@@ -28,6 +28,7 @@ exports.listDevicesTypes = async (req, res, next) => {
   } catch (err) {
     logger.error(err);
     return errorResponse({
+      req,
       res,
       code: statusCodes.STATUS_CODE_FAILURE,
       error: errorResponses.INTERNAL_ERROR,
