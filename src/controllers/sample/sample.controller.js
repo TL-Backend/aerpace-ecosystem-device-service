@@ -3,7 +3,7 @@ const {
   errorResponse,
 } = require('../../utils/responseHandler');
 
-const { statusCodes } = require('../../utils/statusCodes');
+const { statusCodes } = require('../../utils/statusCode');
 const { logger } = require('../../utils/logger');
 
 exports.sampleTest = async (req, res, next) => {

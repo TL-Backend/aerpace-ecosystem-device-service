@@ -4,7 +4,7 @@ const {
   successResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { successResponses } = require('./devices.constants');
+const { successResponses } = require('./devices.constant');
 const { getDeviceTypes } = require('./devices.helper');
 
 exports.listDevicesTypes = async (req, res, next) => {
@@ -17,20 +17,12 @@ exports.listDevicesTypes = async (req, res, next) => {
         message: message,
       });
     }
-    if (data) {
-      return successResponse({
-        res,
-        data: {
-          device_types: data,
-        },
-        message: successResponses.COUNT_FETCH_SUCCESSFULL.message,
-        code: statusCodes.STATUS_CODE_SUCCESS,
-      });
-    }
     return successResponse({
       res,
-      data: {},
-      message: successResponses.NO_DATA_FOUND.message,
+      data: {
+        device_types: data,
+      },
+      message: successResponses.COUNT_FETCH_SUCCESSFULL.message,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {

@@ -1,8 +1,9 @@
 const {
-  aergov_device_models,
   sequelize,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { successResponses } = require('./devices.constants');
+const { logger } = require('../../utils/logger');
+const { statusCodes } = require('../../utils/statusCode');
+const { successResponses } = require('./devices.constant');
 const { queries } = require('./devices.query');
 
 exports.getDeviceTypes = async () => {
