@@ -4,7 +4,7 @@ const {
   successResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { successResponses } = require('./devices.constant');
+const { successResponses, errorResponses } = require('./devices.constant');
 const { getDeviceTypes } = require('./devices.helper');
 
 exports.listDevicesTypes = async (req, res, next) => {
@@ -22,7 +22,7 @@ exports.listDevicesTypes = async (req, res, next) => {
       data: {
         device_types: data,
       },
-      message: successResponses.COUNT_FETCH_SUCCESSFULL.message,
+      message: successResponses.COUNT_FETCH_SUCCESSFULL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {
@@ -30,7 +30,7 @@ exports.listDevicesTypes = async (req, res, next) => {
     return errorResponse({
       res,
       code: statusCodes.STATUS_CODE_FAILURE,
-      error: err,
+      error: errorResponses.INTERNAL_ERROR,
     });
   }
 };
