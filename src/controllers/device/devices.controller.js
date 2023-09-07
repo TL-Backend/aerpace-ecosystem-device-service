@@ -12,6 +12,7 @@ exports.listDevicesTypes = async (req, res, next) => {
     const { success, errorCode, message, data } = await getDeviceTypes();
     if (!success) {
       return errorResponse({
+        req,
         res,
         code: errorCode,
         message: message,
