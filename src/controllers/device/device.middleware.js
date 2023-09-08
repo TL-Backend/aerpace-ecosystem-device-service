@@ -1,7 +1,8 @@
+const {errorResponses} = require('./device.constant');
 const {logger} = require('../../utils/logger');
 const {errorResponse} = require('../../utils/responseHandler');
 const {statusCodes} = require('../../utils/statusCodes');
-const {errorResponses} = require('./device.constants');
+const {errorMessages} = require('./device.constant');
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
     try {
         const deviceType = request.params.device_type; // Device type values are like car, drone etc..
@@ -19,4 +20,4 @@ exports.validateGetDevicesTypeInput = async (request, response, next) => {
             code: statusCodes.STATUS_CODE_INVALID_FORMAT,
         });
     }
-};
+}
