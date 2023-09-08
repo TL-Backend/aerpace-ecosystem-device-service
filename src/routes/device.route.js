@@ -1,4 +1,7 @@
-const { getDevicesList } = require('../controllers/device/device.controller');
+const {
+  getDevicesList,
+  listDevicesTypes,
+} = require('../controllers/device/device.controller');
 
 const {
   validateGetDevicesTypeInput,
