@@ -13,7 +13,7 @@ exports.getDevicesList = async (request, response) => {
             data: {devices: devices.data},
             req: request,
             res: response,
-            message: messages.successMessages.DEVICES_FETCHED_MESSAGE,
+            message: messages.successResponses.DEVICES_FETCHED_MESSAGE,
             code: statusCodes.STATUS_CODE_SUCCESS,
         });
     } catch (error) {

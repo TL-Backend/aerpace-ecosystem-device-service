@@ -1,12 +1,12 @@
 const {logger} = require('../../utils/logger');
 const {errorResponse} = require('../../utils/responseHandler');
 const {statusCodes} = require('../../utils/statusCodes');
-const {errorMessages} = require('./device.constants');
+const {errorResponses} = require('./device.constants');
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
     try {
         const deviceType = request.params.device_type; // Device type values are like car, drone etc..
         if (!deviceType || typeof deviceType !== 'string' || !deviceType?.trim()) {
-            throw errorMessages.INVALID_DEVICE_TYPE(deviceType);
+            throw errorResponses.INVALID_DEVICE_TYPE(deviceType);
         }
         return next();
     } catch (error) {
