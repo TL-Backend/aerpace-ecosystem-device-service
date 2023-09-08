@@ -1,6 +1,6 @@
 const { successResponse } = require('../../utils/responseHandler');
-const { statusCodes } = require('../../utils/statusCodes');
-const { errorResponses, successResponses } = require('./devices.constants');
+const { statusCodes } = require('../../utils/statusCode');
+const { errorResponses, successResponses } = require('./device.constant');
 const {
   sequelize,
   aergov_device_versions,
@@ -9,8 +9,8 @@ const {
   aergov_device_variants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
 const { logger } = require('../../utils/logger');
-const { verifyActionsById, getCategoriesQuery } = require('./devices.queries');
-const { eachLimitPromise } = require('../../utils/utilities');
+const { verifyActionsById, getCategoriesQuery } = require('./device.query');
+const { eachLimitPromise } = require('../../utils/utility');
 
 const createDeviceVersion = async ({
   modelId,
@@ -22,42 +22,35 @@ const createDeviceVersion = async ({
 }) => {
   const transaction = await sequelize.transaction();
   try {
-    const versionWithName = await aergov_device_versions.findAll({
+    const validateVersionName = await aergov_device_versions.findAll({
       where: { name },
     });
 
-    if (versionWithName.length > 0) {
+    if (validateVersionName.length) {
+      await transaction.rollback();
       return {
         success: false,
         message: errorResponses.NAME_EXISTS,
-        code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
       };
     }
 
-    const addVersion = await aergov_device_versions
-      .create(
-        {
-          name: name,
-          model_id: modelId,
-          variant_id: variantId,
-          device_type: type,
-          status: status,
-        },
-        { transaction },
-      )
-      .then((data) => {
-        return data;
-      })
-      .catch((err) => {
-        logger.error(err);
-        return err;
-      });
-    const version_id = addVersion.id;
+    const addVersion = await aergov_device_versions.create(
+      {
+        name: name,
+        model_id: modelId,
+        variant_id: variantId,
+        device_type: type,
+        status: status,
+      },
+      { transaction },
+    );
 
     const { success, message } = await addDeviceActions({
       modelId,
       variantId,
-      version_id,
+      versionId: addVersion.id,
       privileges,
       type,
     }); // device actions addition logic
@@ -67,18 +60,21 @@ const createDeviceVersion = async ({
       return {
         success: false,
         message,
-        code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
       };
     }
 
     await transaction.commit();
-    return { version_id, success };
+    return { versionId: addVersion.id, success };
   } catch (err) {
+    logger.error(err.message);
     await transaction.rollback();
     return {
       success: false,
       message: errorResponses.INTERNAL_ERROR,
-      code: statusCodes.STATUS_CODE_FAILURE,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      data: null,
     };
   }
 };
@@ -98,7 +94,7 @@ const addDeviceActions = async ({
         replacements: { id: privilege.category_id },
       });
 
-      if (categories[0].length < 1) {
+      if (!categories[0].length) {
         isError.push('false');
         return;
       }
@@ -107,39 +103,33 @@ const addDeviceActions = async ({
         replacements: { actions: privilege.actions },
       });
 
-      if (actionsCheck[0][0].result === false) {
+      if (!actionsCheck[0][0].result) {
         isError.push('false');
         return;
       }
 
       for (const action of privilege.actions) {
-        await aergov_device_actions
-          .create(
-            {
-              ...(modelId && { model_id: modelId }),
-              ...(variantId && { variant_id: variantId }),
-              ...(versionId && { version_id: versionId }),
-              action_id: action,
-              category_id: privilege.category_id,
-              device_type: type,
-            },
-            { transaction },
-          )
-          .then((data) => {
-            return data;
-          })
-          .catch((err) => {
-            isError.push(err);
-            throw err;
-          });
+        await aergov_device_actions.create(
+          {
+            ...(modelId && { model_id: modelId }),
+            ...(variantId && { variant_id: variantId }),
+            ...(versionId && { version_id: versionId }),
+            action_id: action,
+            category_id: privilege.category_id,
+            device_type: type,
+          },
+          { transaction },
+        );
       }
     });
 
-    if (isError.length > 0) {
+    if (isError.length) {
       await transaction.rollback();
       return {
         success: false,
         message: errorResponses.IMPROPER_CATEGORY_OR_ACTIONS,
+        errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
+        data: null,
       };
     }
 
@@ -154,14 +144,21 @@ const addDeviceActions = async ({
     logger.error(err);
     return {
       success: false,
-      message: errorResponses.INTERNAL_ERROR,
+      message: err.message,
+      errorCode: errorResponses.INTERNAL_ERROR,
+      data: null,
     };
   }
 };
 
-exports.addDevices = async (params) => {
+exports.addDeviceLevel = async (params) => {
   try {
-    let device;
+    let device = {
+      success: false,
+      data: null,
+      message: errorResponses.INTERNAL_ERROR,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+    };
     const {
       model_id: modelId,
       variant_id: variantId,
@@ -176,11 +173,12 @@ exports.addDevices = async (params) => {
         where: { id: modelId },
       });
 
-      if (modelValidation.length < 1) {
+      if (!modelValidation.length) {
         return {
           success: false,
-          code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.INVALID_MODEL,
+          data: null,
         };
       }
 
@@ -188,11 +186,12 @@ exports.addDevices = async (params) => {
         where: { id: variantId },
       });
 
-      if (variantValidation.length < 1) {
+      if (!variantValidation.length) {
         return {
           success: false,
-          code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.INVALID_VARIANT,
+          data: null,
         };
       }
 
@@ -211,14 +210,15 @@ exports.addDevices = async (params) => {
         success: false,
         data: null,
         message: device.message,
-        code: device.code,
+        errorCode: device.errorCode,
+        data: null,
       };
     }
     return {
       success: true,
-      data: { version_id: device.version_id },
+      data: { version_id: device.versionId },
       message: successResponses.DEVICE_CREATED,
-      code: statusCodes.STATUS_CODE_SUCCESS,
+      errorCode: statusCodes.STATUS_CODE_SUCCESS,
     };
   } catch (err) {
     logger.error(err);
@@ -226,7 +226,7 @@ exports.addDevices = async (params) => {
       success: false,
       data: null,
       message: errorResponses.INTERNAL_ERROR,
-      code: statusCodes.STATUS_CODE_FAILURE,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
     };
   }
 };

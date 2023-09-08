@@ -10,13 +10,14 @@ exports.errorResponses = {
   INVALID_OBJECT_OR_MISSING_ERROR: (value) => {
     return `${value} should be present and it must be an object`;
   },
-  INTERNAL_ERROR: 'Internal error',
-  NAME_EXISTS: 'name already exists',
-  INVALID_ACTIONS:
-    'Actions should be present in privileges and it must be object',
-  INVALID_CATEGORY_ID:
-    'category id must be present in privileges and it must be integer',
+  INVALID_MODEL_ID_TYPE: `Model id should be of type string and should start with m_`,
+  INVALID_VARIANT_ID_TYPE: `Variant id should be of type string and should start with va_`,
+  INTERNAL_ERROR: `Internal error`,
+  NAME_EXISTS: `name already exists`,
+  INVALID_ACTIONS: `actions should be present in privileges and it must be object`,
+  INVALID_CATEGORY_ID: `category id must be present in privileges and it must be integer`,
   IMPROPER_CATEGORY_OR_ACTIONS: `please enter proper category id or proper actions`,
   INVALID_MODEL: `Invalid model id`,
   INVALID_VARIANT: `Invalid variant id`,
+  MODEL_ID_MISSING: `Model Id must be passed`,
 };

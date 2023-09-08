@@ -3,28 +3,33 @@ const {
   errorResponse,
   successResponse,
 } = require('../../utils/responseHandler');
-const { statusCodes } = require('../../utils/statusCodes');
-const { errorResponses } = require('./devices.constants');
-const { addDevices } = require('./devices.helper');
+const { statusCodes } = require('../../utils/statusCode');
+const { errorResponses } = require('./device.constant');
+const { addDeviceLevel } = require('./device.helper');
 
-exports.createDevices = async (req, res, next) => {
+exports.createDeviceLevel = async (req, res, next) => {
   try {
-    const { success, message, code, data } = await addDevices(req.body);
+    const {
+      success,
+      message,
+      code: errorCode,
+      data,
+    } = await addDeviceLevel(req.body);
 
     if (!success) {
       return errorResponse({
         req,
         res,
         message: message,
-        code: code,
+        code: errorCode,
       });
     }
     return successResponse({
       req,
       res,
       data,
-      message: message,
-      code: code,
+      message,
+      code: errorCode,
     });
   } catch (err) {
     logger.error(err);
