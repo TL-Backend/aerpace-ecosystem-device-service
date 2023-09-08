@@ -3,7 +3,7 @@ const {
     errorResponse,
     successResponse,
 } = require('../../utils/responseHandler');
-const {statusCodes} = require('../../utils/statusCodes');
+const {statusCodes} = require('../../utils/statusCode');
 const {getDevicesDataHelper} = require('./device.helper');
 const messages = require('./device.constant');
 const {successResponses, errorResponses} = require('./device.constant');
