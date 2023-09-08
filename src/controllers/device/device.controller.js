@@ -6,12 +6,6 @@ const {
 const { statusCodes } = require('../../utils/statusCodes');
 const { getDevicesDataHelper } = require('./device.helper');
 const messages = require('./device.constant');
-const { logger } = require('../../utils/logger');
-const {
-  errorResponse,
-  successResponse,
-} = require('../../utils/responseHandler');
-const { statusCodes } = require('../../utils/statusCode');
 const { successResponses, errorResponses } = require('./device.constant');
 const { getDeviceTypes } = require('./device.helper');
 
