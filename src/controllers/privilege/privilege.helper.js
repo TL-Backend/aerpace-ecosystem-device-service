@@ -7,6 +7,28 @@ const { statusCodes } = require('../../utils/statusCode');
 const { successResponses, errorResponses } = require('./privilege.constant');
 const { getPrivileges, getDeviceVariants } = require('./privilege.query');
 
+const validateCondition = async ({ checkCondition, modelId, variantId }) => {
+  const conditionStatus = await sequelize.query(
+    getDeviceVariants.replace('{{condition}}', checkCondition),
+    {
+      replacements: { model_id: modelId, variant_id: variantId },
+      type: sequelize.QueryTypes.SELECT,
+    },
+  );
+  return conditionStatus[0].exists;
+};
+
+const getPrivilegesData = async ({ queryCondition, type }) => {
+  const previlegesData = await sequelize.query(
+    getPrivileges.replace(`{{queryCondition}}`, queryCondition),
+    {
+      replacements: { type },
+      type: sequelize.QueryTypes.SELECT,
+    },
+  );
+  return previlegesData;
+};
+
 exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
   try {
     type = type.trim();
@@ -25,14 +47,12 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
       queryCondition = '';
     }
 
-    const data = await sequelize.query(
-      getDeviceVariants.replace('{{condition}}', checkCondition),
-      {
-        replacements: { model_id: modelId, variant_id: variantId },
-        type: sequelize.QueryTypes.SELECT,
-      },
-    );
-    if (!data[0].exists) {
+    const conditionStatus = await validateCondition({
+      checkCondition,
+      modelId,
+      variantId,
+    });
+    if (!conditionStatus) {
       return {
         success: false,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -41,13 +61,7 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
       };
     }
 
-    const previlegesData = await sequelize.query(
-      getPrivileges.replace(`{{queryCondition}}`, queryCondition),
-      {
-        replacements: { type },
-        type: sequelize.QueryTypes.SELECT,
-      },
-    );
+    const previlegesData = await getPrivilegesData({ queryCondition, type });
     return {
       success: true,
       message: successResponses.DATA_FETCH_SUCCESSFULL,
