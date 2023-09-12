@@ -18,10 +18,15 @@ exports.listMasterPrivilegesValidation = async (req, res, next) => {
     ) {
       errorsList.push(errorResponses.INVALID_TYPE);
     }
-    if (modelId && typeof modelId !== 'string') {
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID);
     }
-    if (variantId && typeof variantId !== 'string') {
+    if (
+      variantId &&
+      (typeof variantId !== 'string' ||
+        !variantId.startsWith('va_') ||
+        !modelId)
+    ) {
       errorsList.push(errorResponses.INVALID_VARIANT_ID);
     }
     if (errorsList.length) {

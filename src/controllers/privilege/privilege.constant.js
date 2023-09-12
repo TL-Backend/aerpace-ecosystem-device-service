@@ -4,8 +4,9 @@ exports.successResponses = {
 };
 
 exports.errorResponses = {
-  INVALID_TYPE: 'invalid model type',
+  INVALID_MODEL_VARIANT_COMBINATION: 'invalid model and variant combination',
+  INVALID_TYPE: 'invalid device type',
   INVALID_MODEL_ID: 'invalid model id',
-  INVALID_VARIANT_ID: 'invalid variant id',
+  INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
   INTERNAL_ERROR: 'internal error',
 };

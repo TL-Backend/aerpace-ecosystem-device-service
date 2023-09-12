@@ -25,3 +25,9 @@ GROUP BY
     aac.id,
     aac.category_name;
 `;
+
+exports.getDeviceVariants = `
+SELECT EXISTS (
+    (    SELECT * FROM ${dbTables.DEVICE_VERSION_TABLE} AS adve {{condition}}
+    ));
+`;
