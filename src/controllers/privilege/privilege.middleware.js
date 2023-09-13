@@ -6,17 +6,13 @@ const { errorResponses } = require('./privilege.constant');
 
 exports.listDevicePrivilegesValidation = async (req, res, next) => {
   try {
-    const errorsList = [];
     const { version_id: versionId } = req.query;
     if (
       !versionId ||
       typeof versionId !== 'string' ||
       !versionId.startsWith(levelStarting.version)
     ) {
-      errorsList.push(errorResponses.INVALID_ID('version'));
-    }
-    if (errorsList.length) {
-      throw errorsList.join(', ');
+      throw errorResponses.INVALID_ID('version');
     }
     return next();
   } catch (err) {
