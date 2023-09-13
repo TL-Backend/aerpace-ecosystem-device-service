@@ -5,6 +5,7 @@ const { statusCodes } = require('../../utils/statusCode');
 const {
   constants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
+const { levelStarting } = require('../../utils/constant');
 
 exports.listMasterPrivilegesValidation = async (req, res, next) => {
   try {
@@ -18,13 +19,16 @@ exports.listMasterPrivilegesValidation = async (req, res, next) => {
     ) {
       errorsList.push(errorResponses.INVALID_TYPE);
     }
-    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
+    if (
+      modelId &&
+      (typeof modelId !== 'string' || !modelId.startsWith(levelStarting.model))
+    ) {
       errorsList.push(errorResponses.INVALID_MODEL_ID);
     }
     if (
       variantId &&
       (typeof variantId !== 'string' ||
-        !variantId.startsWith('va_') ||
+        !variantId.startsWith(levelStarting.variant) ||
         !modelId)
     ) {
       errorsList.push(errorResponses.INVALID_VARIANT_ID);
