@@ -8,7 +8,8 @@
     "prepare": "husky install",
     "lint": "eslint",
     "format": "prettier --write .",
-    "local": "node app.js"
+    "local": "node app.js",
+    "start": "nodemon app.js"
   },
   "repository": {
     "type": "git",
