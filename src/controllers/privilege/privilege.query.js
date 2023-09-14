@@ -12,7 +12,7 @@ SELECT
                 json_build_object(
                     'model',
                     COALESCE(json_agg(
-                      json_build_object('action_id', action_id, 'action_name', adma.action_name)
+                      json_build_object('action_id', action_id, 'action_name', adma.action_name, 'category_id',aac.id, 'category_name', aac.category_name)
                   ) FILTER (
                       WHERE
                           model_id IS NOT NULL  
@@ -21,7 +21,7 @@ SELECT
                   ),'[]'),
                     'variant',
                    COALESCE( json_agg(
-                    json_build_object('action_id', action_id,'action_name', adma.action_name)
+                    json_build_object('action_id', action_id,'action_name', adma.action_name, 'category_id',aac.id, 'category_name', aac.category_name)
                 ) FILTER (
                     WHERE
                         model_id = adve.model_id
@@ -30,7 +30,7 @@ SELECT
                 ),'[]'),
                     'version',
                    COALESCE( json_agg(
-                    json_build_object('action_id', action_id, 'action_name', adma.action_name)
+                    json_build_object('action_id', action_id, 'action_name', adma.action_name,'category_id',aac.id, 'category_name', aac.category_name)
                 ) FILTER (
                     WHERE
                         model_id = adve.model_id
@@ -41,6 +41,7 @@ SELECT
             FROM
                 ${dbTables.DEVICE_ACTIONS_TABLE} AS ada
                 LEFT JOIN ${dbTables.DEVICE_MASTER_ACTION_TABLE} AS adma ON adma.id = ada.action_id
+                LEFT JOIN ${dbTables.DEVICE_ACTIONS_CATEGORY} AS aac ON aac.id = ada.category_id
             WHERE (
                     model_id = adve.model_id
                     AND variant_id IS NULL
