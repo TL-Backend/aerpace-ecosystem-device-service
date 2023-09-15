@@ -11,3 +11,7 @@ exports.errorResponses = {
     return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
   },
 };
+
+exports.activityStatus = {
+  ACTIVE: 'ACTIVE',
+};

@@ -1,4 +1,5 @@
 const { dbTables } = require('../../utils/constant');
+const { activityStatus } = require('./privilege.constant');
 
 exports.getDevicePrivileges = `
 SELECT
@@ -62,5 +63,5 @@ SELECT
     END AS data
 FROM
     ${dbTables.DEVICE_VERSION_TABLE} AS adve
-WHERE adve.id = :version_id;
+WHERE adve.id = :version_id AND adve.status = '${activityStatus.ACTIVE}';
 `;
