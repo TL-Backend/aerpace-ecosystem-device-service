@@ -1,5 +1,5 @@
 const { logger } = require('../../utils/logger');
-const { helperResponse } = require('../../utils/response');
+const { HelperResponse } = require('../../utils/response');
 const { statusCodes } = require('../../utils/statusCode');
 const { successResponses, errorResponses } = require('./privilege.constant');
 const {
@@ -12,7 +12,6 @@ const { getActions, validateActionIds } = require('./privilege.query');
 exports.addPrivilegesToPersonality = async (params) => {
   try {
     const {
-      type,
       model_id: modelId,
       variant_id: variantId,
       version_id: versionId,
@@ -25,7 +24,7 @@ exports.addPrivilegesToPersonality = async (params) => {
       message,
     } = this.groupPrivileges(privileges);
     if (!success) {
-      return new helperResponse({
+      return new HelperResponse({
         success: false,
         message,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -44,7 +43,7 @@ exports.addPrivilegesToPersonality = async (params) => {
     });
 
     if (!validateSuccess) {
-      return new helperResponse({
+      return new HelperResponse({
         success: false,
         message: validateMessage,
         errorCode: validateErrorCode,
@@ -130,12 +129,12 @@ exports.addPrivilegesToPersonality = async (params) => {
     }
 
     if (error) {
-      return new helperResponse(errorResponse);
+      return new HelperResponse(errorResponse);
     }
 
     await aergov_device_model_privileges.bulkCreate(personalities);
 
-    return new helperResponse({
+    return new HelperResponse({
       success: true,
       message: successResponses.PRIVILEGES_ADDED,
       data: {
@@ -147,7 +146,7 @@ exports.addPrivilegesToPersonality = async (params) => {
     });
   } catch (err) {
     logger.error(err);
-    return new helperResponse({ success: false, message: err.message });
+    return new HelperResponse({ success: false, message: err.message });
   }
 };
 
@@ -172,9 +171,9 @@ exports.groupPrivileges = (privileges) => {
 
     const result = Object.values(groupedPrivileges);
 
-    return new helperResponse({ success: true, data: result });
+    return new HelperResponse({ success: true, data: result });
   } catch (err) {
-    return new helperResponse({ success: false, message: err.message });
+    return new HelperResponse({ success: false, message: err.message });
   }
 };
 
@@ -193,7 +192,7 @@ exports.validateModelVariantVersionId = async ({
     });
 
     if (!versionInfo) {
-      return new helperResponse({
+      return new HelperResponse({
         success: false,
         message: errorResponses.INVALID_ID('VERSION', versionId),
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -201,7 +200,7 @@ exports.validateModelVariantVersionId = async ({
     }
 
     if (modelId !== versionInfo.model_id) {
-      return new helperResponse({
+      return new HelperResponse({
         success: false,
         message: errorResponses.INVALID_ID('MODEL', modelId),
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -209,17 +208,17 @@ exports.validateModelVariantVersionId = async ({
     }
 
     if (variantId !== versionInfo.variant_id) {
-      return new helperResponse({
+      return new HelperResponse({
         success: false,
         message: errorResponses.INVALID_ID('VARIANT', variantId),
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
       });
     }
 
-    return new helperResponse({ success: true, data: versionInfo });
+    return new HelperResponse({ success: true, data: versionInfo });
   } catch (err) {
     logger.error(err.message);
-    return new helperResponse({ success: false, message: err.message });
+    return new HelperResponse({ success: false, message: err.message });
   }
 };
 
@@ -240,11 +239,11 @@ exports.getActionDetails = async ({
       raw: true,
     });
 
-    return new helperResponse({
+    return new HelperResponse({
       success: true,
       data: data[0][0]?.all_action_data,
     });
   } catch (err) {
-    return new helperResponse({ success: false, message: err.message });
+    return new HelperResponse({ success: false, message: err.message });
   }
 };

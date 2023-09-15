@@ -1,7 +1,7 @@
 const { successResponses, errorResponses } = require('./constant');
 const { statusCodes } = require('./statusCode');
 
-class helperResponse {
+class HelperResponse {
   constructor({ success, data, errorCode, message }) {
     if (success) {
       if (!message) {
@@ -30,5 +30,5 @@ class helperResponse {
 }
 
 module.exports = {
-  helperResponse,
+  HelperResponse,
 };
