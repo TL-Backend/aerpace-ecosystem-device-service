@@ -4,6 +4,7 @@ exports.dbTables = {
   DEVICE_VERSION_TABLE: 'aergov_device_versions',
   DEVICE_MASTER_ACTIONS: 'aergov_device_master_actions',
   DEVICE_ACTION_CATEGORIES: 'aergov_action_categories',
+  DEVICE_ACTIONS: 'aergov_device_actions',
 };
 
 exports.levelStarting = {

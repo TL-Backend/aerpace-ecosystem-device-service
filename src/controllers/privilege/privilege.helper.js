@@ -5,7 +5,12 @@ const { dbTables } = require('../../utils/constant');
 const { logger } = require('../../utils/logger');
 const { statusCodes } = require('../../utils/statusCode');
 const { successResponses, errorResponses } = require('./privilege.constant');
-const { getPrivileges, getDeviceVariants } = require('./privilege.query');
+const {
+  getPrivileges,
+  getDeviceVariants,
+  conditions,
+  filterConditionQuery,
+} = require('./privilege.query');
 
 const validateCondition = async ({ checkCondition, modelId, variantId }) => {
   const conditionStatus = await sequelize.query(
@@ -35,20 +40,20 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
     modelId = modelId ? modelId.trim() : null;
     variantId = variantId ? variantId.trim() : null;
 
-    let queryCondition, checkCondition;
+    let filterCondition, joinCondition;
     if (type && modelId && variantId) {
-      checkCondition = ` INNER JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adve.model_id = adm.id INNER JOIN ${dbTables.DEVICE_VARIANT_TABLE} AS adva ON adve.variant_id = adva.id WHERE adve.model_id = :model_id AND adve.variant_id = :variant_id`;
-      queryCondition = `AND adma.id NOT IN (SELECT action_id FROM aergov_device_actions WHERE (model_id = '${modelId}' AND variant_id is NULL) OR (model_id = '${modelId}' AND variant_id = '${variantId}' AND version_id is NUll))`;
+      filterCondition = filterConditionQuery(modelId, variantId);
+      joinCondition = conditions.versionJoinCondition;
     } else if (type && modelId) {
-      checkCondition = ` INNER JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adve.model_id = adm.id WHERE adve.model_id = :model_id `;
-      queryCondition = `AND adma.id NOT IN (SELECT action_id FROM aergov_device_actions WHERE (model_id = '${modelId}' AND variant_id is NUll) OR (model_id = '${modelId}' AND variant_id = '${variantId}' AND version_id is NULL))`;
+      joinCondition = conditions.variantJoinCondition;
+      filterCondition = filterConditionQuery(modelId, variantId);
     } else if (type) {
-      checkCondition = '';
-      queryCondition = '';
+      joinCondition = '';
+      filterCondition = '';
     }
 
     const conditionStatus = await validateCondition({
-      checkCondition,
+      checkCondition: joinCondition,
       modelId,
       variantId,
     });
@@ -61,7 +66,10 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
       };
     }
 
-    const previlegesData = await getPrivilegesData({ queryCondition, type });
+    const previlegesData = await getPrivilegesData({
+      queryCondition: filterCondition,
+      type,
+    });
     return {
       success: true,
       message: successResponses.DATA_FETCH_SUCCESSFULL,
