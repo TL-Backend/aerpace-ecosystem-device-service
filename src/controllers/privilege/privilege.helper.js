@@ -7,7 +7,11 @@ const {
   aergov_device_versions,
   aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { getActions, validateActionIds } = require('./privilege.query');
+const {
+  getActions,
+  validateActionIds,
+  getDevicePrivileges,
+} = require('./privilege.query');
 
 exports.addPrivilegesToPersonality = async (params) => {
   try {
@@ -245,5 +249,37 @@ exports.getActionDetails = async ({
     });
   } catch (err) {
     return new HelperResponse({ success: false, message: err.message });
+  }
+};
+
+exports.listDeviceLevelPrivileges = async ({ versionId }) => {
+  try {
+    const privilegesData = await sequelize.query(getDevicePrivileges, {
+      replacements: { version_id: versionId },
+      type: sequelize.QueryTypes.SELECT,
+    });
+    if (!privilegesData[0]) {
+      return {
+        success: false,
+        errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
+        message: errorResponses.INVALID_VERSION,
+        data: null,
+      };
+    }
+    return {
+      success: true,
+      data: {
+        privileges: privilegesData[0].data,
+      },
+      message: successResponses.DATA_FETCH_SUCCESSFUL,
+    };
+  } catch (err) {
+    logger.error(err);
+    return {
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      message: err.message,
+      data: null,
+    };
   }
 };

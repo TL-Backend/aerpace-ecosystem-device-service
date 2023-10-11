@@ -4,7 +4,11 @@ const {
   errorResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { addPrivilegesToPersonality } = require('./privilege.helper');
+const {
+  addPrivilegesToPersonality,
+  listDeviceLevelPrivileges,
+} = require('./privilege.helper');
+const { errorResponses, successResponses } = require('./privilege.constant');
 
 exports.addPersonalityPrivileges = async (req, res, next) => {
   try {
@@ -32,6 +36,36 @@ exports.addPersonalityPrivileges = async (req, res, next) => {
       res,
       code: statusCodes.STATUS_CODE_FAILURE,
       message: err.message,
+    });
+  }
+};
+
+exports.getDeviceLevelPrivileges = async (req, res, next) => {
+  try {
+    const { version_id: versionId } = req.query;
+    let { success, errorCode, message, data } = await listDeviceLevelPrivileges(
+      { versionId },
+    );
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        code: errorCode,
+        message,
+      });
+    }
+    return successResponse({
+      res,
+      data,
+      message,
+    });
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      code: statusCodes.STATUS_CODE_FAILURE,
+      error: errorResponses.INTERNAL_ERROR,
     });
   }
 };

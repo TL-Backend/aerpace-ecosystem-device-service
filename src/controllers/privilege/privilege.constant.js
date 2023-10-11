@@ -2,6 +2,7 @@ const { levelStarting } = require('../../utils/constant');
 
 exports.successResponses = {
   PRIVILEGES_ADDED: 'privileges were added to a personality successfully',
+  DATA_FETCH_SUCCESSFUL: 'data fetched successfully',
 };
 
 exports.errorResponses = {
@@ -31,4 +32,12 @@ exports.errorResponses = {
   },
   INVALID_ACTION_ID: `Improper list of action id's were given.`,
   PERSONALITY_ALREADY_EXISTS: `The given personality already exists, please try updating them. `,
+  INVALID_VERSION: 'invalid version id',
+  INVALID_DEVICE_ID: (value) => {
+    return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
+  },
+};
+
+exports.activityStatus = {
+  ACTIVE: 'ACTIVE',
 };

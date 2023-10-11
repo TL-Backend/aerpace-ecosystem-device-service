@@ -1,8 +1,10 @@
 const {
   addPersonalityPrivileges,
+  getDeviceLevelPrivileges,
 } = require('../controllers/privilege/privilege.controller');
 const {
   validateAddPersonalityPrivileges,
+  listDevicePrivilegesValidation,
 } = require('../controllers/privilege/privilege.middleware');
 
 module.exports = function (app) {
@@ -10,5 +12,10 @@ module.exports = function (app) {
     '/privileges/personality',
     validateAddPersonalityPrivileges,
     addPersonalityPrivileges,
+  );
+  app.get(
+    '/privileges/devices',
+    listDevicePrivilegesValidation,
+    getDeviceLevelPrivileges,
   );
 };
