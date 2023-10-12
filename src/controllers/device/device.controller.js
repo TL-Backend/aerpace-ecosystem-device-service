@@ -14,7 +14,6 @@ const { getDeviceTypes } = require('./device.helper');
 
 exports.getDevicesList = async (request, response) => {
   try {
-    console.log('hi');
     let devices = await getDevicesDataHelper({
       deviceType: request.params.device_type,
     });
