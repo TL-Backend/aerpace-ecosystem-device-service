@@ -21,3 +21,31 @@ exports.validateGetDevicesTypeInput = async (request, response, next) => {
     });
   }
 };
+
+exports.validateGetPersonalityPrivilegesInput = async (req, res, next) => {
+  try {
+    const { model_id, variant_id, version_id } = req.query;
+    let errorList = [];
+    if (!model_id || typeof model_id !== 'string') {
+      errorList.push(errorResponses.MODEL_ID_INVALID);
+    }
+    if (!variant_id || typeof variant_id !== 'string') {
+      errorList.push(errorResponses.VARIANT_ID_INVALID);
+    }
+    if (!version_id || typeof version_id !== 'string') {
+      errorList.push(errorResponses.VERSION_ID_INVALID);
+    }
+    if (errorList.length) {
+      throw errorList.join(', ');
+    }
+    return next();
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      message: err,
+      code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+    });
+  }
+};

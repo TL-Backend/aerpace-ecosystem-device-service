@@ -4,13 +4,17 @@ const {
   successResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { getDevicesDataHelper } = require('./device.helper');
+const {
+  getDevicesDataHelper,
+  getPersonalityPrivilegesHelper,
+} = require('./device.helper');
 const messages = require('./device.constant');
 const { successResponses, errorResponses } = require('./device.constant');
 const { getDeviceTypes } = require('./device.helper');
 
 exports.getDevicesList = async (request, response) => {
   try {
+    console.log('hi');
     let devices = await getDevicesDataHelper({
       deviceType: request.params.device_type,
     });
@@ -48,6 +52,35 @@ exports.listDevicesTypes = async (req, res, next) => {
       data: {
         device_types: data,
       },
+      message: successResponses.COUNT_FETCH_SUCCESSFULL,
+      code: statusCodes.STATUS_CODE_SUCCESS,
+    });
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      code: statusCodes.STATUS_CODE_FAILURE,
+      error: errorResponses.INTERNAL_ERROR,
+    });
+  }
+};
+
+exports.getPersonalityDetails = async (req, res, next) => {
+  try {
+    const { success, errorCode, message, data } =
+      await getPersonalityPrivilegesHelper({ params: req.query });
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        code: errorCode,
+        message: message,
+      });
+    }
+    return successResponse({
+      res,
+      data,
       message: successResponses.COUNT_FETCH_SUCCESSFULL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });

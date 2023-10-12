@@ -54,3 +54,20 @@ exports.queries = {
   FROM  ${dbTables.DEVICE_MODELS_TABLE} AS adm WHERE adm.status = '${status.ACTIVE}'
   GROUP BY adm.device_type;`,
 };
+
+exports.getPersonalityPrivileges = `
+    SELECT     
+    json_agg(
+        json_build_object(
+            'name',
+            user_type,
+            'privileges',
+            privileges
+        )
+    ) AS persoanlities
+    FROM aergov_device_model_privileges
+    WHERE
+    model_id = :model_id
+    AND variant_id = :variant_id
+    AND version_id = :version_id
+`;
