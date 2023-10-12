@@ -4,7 +4,10 @@ const {
   successResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { getDevicesDataHelper } = require('./device.helper');
+const {
+  getDevicesDataHelper,
+  deleteVersionHelper,
+} = require('./device.helper');
 const messages = require('./device.constant');
 const { successResponses, errorResponses } = require('./device.constant');
 const { getDeviceTypes } = require('./device.helper');
@@ -58,6 +61,37 @@ exports.listDevicesTypes = async (req, res, next) => {
       res,
       code: statusCodes.STATUS_CODE_FAILURE,
       error: errorResponses.INTERNAL_ERROR,
+    });
+  }
+};
+
+exports.deleteVersion = async (req, res, next) => {
+  try {
+    const { data, success, message, errorCode } = await deleteVersionHelper(
+      req.params.id,
+    );
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        message,
+        code: errorCode,
+      });
+    }
+    return successResponse({
+      req,
+      res,
+      data,
+      message,
+      code: statusCodes.STATUS_CODE_SUCCESS,
+    });
+  } catch (err) {
+    logger.error(err.message);
+    return errorResponse({
+      req,
+      res,
+      message: err.message,
+      code: statusCodes.STATUS_CODE_FAILURE,
     });
   }
 };
