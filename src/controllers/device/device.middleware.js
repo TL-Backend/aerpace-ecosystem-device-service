@@ -3,6 +3,7 @@ const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
 const { errorMessages } = require('./device.constant');
+
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
   try {
     const deviceType = request.params.device_type; // Device type values are like car, drone etc..
