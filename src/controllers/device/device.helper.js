@@ -58,7 +58,6 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
         version_id: params.version_id,
       },
     });
-    console.log(personalityData[0][0]);
     return {
       success: true,
       errorCode: statusCodes.STATUS_CODE_SUCCESS,

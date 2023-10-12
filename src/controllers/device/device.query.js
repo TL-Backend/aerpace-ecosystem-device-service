@@ -65,7 +65,7 @@ exports.getPersonalityPrivileges = `
             privileges
         )
     ) AS persoanlities
-    FROM aergov_device_model_privileges
+    FROM ${dbTables.DEVICE_MODEL_PRIVILEGES}
     WHERE
     model_id = :model_id
     AND variant_id = :variant_id
