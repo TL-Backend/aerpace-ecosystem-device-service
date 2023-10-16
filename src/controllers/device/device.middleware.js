@@ -4,7 +4,7 @@ const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
 const {
   constants,
-} = require('../../services/aerpace-ecosystem-backend-db/src/commons/constants');
+} = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
 
 exports.validateDeviceInput = async (req, res, next) => {
   try {
@@ -40,7 +40,7 @@ exports.validateDeviceInput = async (req, res, next) => {
     if (
       !status ||
       typeof status !== 'string' ||
-      !constants.device_status.includes(status)
+      !constants.DEVICE_STATUS.includes(status)
     ) {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('status'));
     }
@@ -48,7 +48,7 @@ exports.validateDeviceInput = async (req, res, next) => {
     if (
       !type ||
       typeof type !== 'string' ||
-      !constants.device_types.includes(type)
+      !constants.DEVICE_TYPES.includes(type)
     ) {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('type'));
     }

@@ -9,12 +9,9 @@ const { addDeviceLevel } = require('./device.helper');
 
 exports.createDeviceLevel = async (req, res, next) => {
   try {
-    const {
-      success,
-      message,
-      code: errorCode,
-      data,
-    } = await addDeviceLevel(req.body);
+    const { success, message, errorCode, data } = await addDeviceLevel(
+      req.body,
+    );
 
     if (!success) {
       return errorResponse({

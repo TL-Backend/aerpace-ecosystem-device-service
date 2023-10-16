@@ -1,8 +1,8 @@
-const { successResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
 const { errorResponses, successResponses } = require('./device.constant');
 const {
   sequelize,
+  Sequelize,
   aergov_device_versions,
   aergov_device_actions,
   aergov_device_models,
@@ -23,7 +23,7 @@ const createDeviceVersion = async ({
   const transaction = await sequelize.transaction();
   try {
     const validateVersionName = await aergov_device_versions.findAll({
-      where: { name },
+      where: { name, variant_id: { [Sequelize.Op.ne]: variantId } },
     });
 
     if (validateVersionName.length) {
@@ -47,26 +47,26 @@ const createDeviceVersion = async ({
       { transaction },
     );
 
-    const { success, message } = await addDeviceActions({
+    const { success, message, errorCode } = await addDeviceActions({
       modelId,
       variantId,
       versionId: addVersion.id,
       privileges,
       type,
-    }); // device actions addition logic
+    });
 
     if (!success) {
       await transaction.rollback();
       return {
         success: false,
         message,
-        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        errorCode: errorCode,
         data: null,
       };
     }
 
     await transaction.commit();
-    return { versionId: addVersion.id, success };
+    return { id: addVersion.id, success };
   } catch (err) {
     logger.error(err.message);
     await transaction.rollback();
@@ -151,6 +151,126 @@ const addDeviceActions = async ({
   }
 };
 
+const createDeviceVariant = async ({
+  modelId,
+  name,
+  status,
+  type,
+  privileges,
+}) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const validateVariantName = await aergov_device_variants.findAll({
+      where: { name, model_id: { [Op.ne]: modelId } },
+    });
+
+    if (validateVariantName.length) {
+      await transaction.rollback();
+      return {
+        success: false,
+        message: errorResponses.NAME_EXISTS,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
+      };
+    }
+
+    const addVariant = await aergov_device_variants.create(
+      {
+        name: name,
+        model_id: modelId,
+        device_type: type,
+        status: status,
+      },
+      { transaction },
+    );
+
+    const { success, message } = await addDeviceActions({
+      modelId,
+      variantId: addVariant.id,
+      privileges,
+      type,
+    });
+
+    if (!success) {
+      await transaction.rollback();
+      return {
+        success: false,
+        message,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
+      };
+    }
+
+    await transaction.commit();
+    return { id: addVariant.id, success };
+  } catch (err) {
+    logger.error(err.message);
+    await transaction.rollback();
+    return {
+      success: false,
+      message: errorResponses.INTERNAL_ERROR,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      data: null,
+    };
+  }
+};
+
+const createDeviceModel = async ({ name, status, type, privileges }) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const validateModelName = await aergov_device_models.findAll({
+      where: { name },
+    });
+
+    if (validateModelName.length) {
+      await transaction.rollback();
+      return {
+        success: false,
+        message: errorResponses.NAME_EXISTS,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
+      };
+    }
+
+    const addModel = await aergov_device_models.create(
+      {
+        name: name,
+        device_type: type,
+        status: status,
+      },
+      { transaction },
+    );
+
+    const { success, message } = await addDeviceActions({
+      modelId: addModel.id,
+      privileges,
+      type,
+    });
+
+    if (!success) {
+      await transaction.rollback();
+      return {
+        success: false,
+        message,
+        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+        data: null,
+      };
+    }
+
+    await transaction.commit();
+    return { id: addModel.id, success };
+  } catch (err) {
+    logger.error(err.message);
+    await transaction.rollback();
+    return {
+      success: false,
+      message: errorResponses.INTERNAL_ERROR,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      data: null,
+    };
+  }
+};
+
 exports.addDeviceLevel = async (params) => {
   try {
     let device = {
@@ -205,18 +325,49 @@ exports.addDeviceLevel = async (params) => {
       });
     }
 
+    if (modelId && !variantId) {
+      const modelValidation = await aergov_device_models.findAll({
+        where: { id: modelId },
+      });
+
+      if (!modelValidation.length) {
+        return {
+          success: false,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          message: errorResponses.INVALID_MODEL,
+          data: null,
+        };
+      }
+
+      device = await createDeviceVariant({
+        modelId,
+        name,
+        status,
+        type,
+        privileges,
+      });
+    }
+
+    if (!modelId && !variantId) {
+      device = await createDeviceModel({
+        name,
+        status,
+        type,
+        privileges,
+      });
+    }
+
     if (!device.success) {
       return {
         success: false,
         data: null,
         message: device.message,
         errorCode: device.errorCode,
-        data: null,
       };
     }
     return {
       success: true,
-      data: { version_id: device.versionId },
+      data: { id: device.id },
       message: successResponses.DEVICE_CREATED,
       errorCode: statusCodes.STATUS_CODE_SUCCESS,
     };
