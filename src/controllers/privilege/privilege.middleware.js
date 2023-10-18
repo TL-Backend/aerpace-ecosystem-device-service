@@ -1,11 +1,11 @@
-const { levelStarting } = require('../../utils/constant');
+const { errorResponses } = require('./privilege.constant');
 const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { errorResponses } = require('./privilege.constant');
 const {
   constants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
+const { levelStarting } = require('../../utils/constant');
 
 exports.validateAddPersonalityPrivileges = async (req, res, next) => {
   try {

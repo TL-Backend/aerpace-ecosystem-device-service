@@ -1,8 +1,9 @@
 const { levelStarting } = require('../../utils/constant');
 
 exports.successResponses = {
+  NO_DATA_FOUND: 'no data found',
   PRIVILEGES_ADDED: 'privileges were added to a personality successfully',
-  DATA_FETCH_SUCCESSFUL: 'data fetched successfully',
+  DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
 };
 
 exports.errorResponses = {
@@ -36,6 +37,11 @@ exports.errorResponses = {
   INVALID_DEVICE_ID: (value) => {
     return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
   },
+  INVALID_MODEL_VARIANT_COMBINATION: 'invalid model or variant id',
+  INVALID_TYPE: 'invalid device type',
+  INVALID_MODEL_ID: 'invalid model id',
+  INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
+  INTERNAL_ERROR: 'internal error',
 };
 
 exports.activityStatus = {

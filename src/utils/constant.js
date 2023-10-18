@@ -5,6 +5,13 @@ exports.dbTables = {
   DEVICE_ACTIONS: `aergov_device_actions`,
   DEVICE_MASTER_ACTIONS: `aergov_device_master_actions`,
   ACTION_CATEGORIES: `aergov_action_categories`,
+  DEVICE_ACTION_CATEGORIES: 'aergov_action_categories',
+};
+
+exports.levelStarting = {
+  model: 'm_',
+  variant: 'va_',
+  version: 'ver_',
 };
 
 exports.levelStarting = {
