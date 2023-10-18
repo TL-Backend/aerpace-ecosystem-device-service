@@ -93,9 +93,48 @@ exports.listDevicePrivilegesValidation = async (req, res, next) => {
     if (
       !versionId ||
       typeof versionId !== 'string' ||
-      !versionId.startsWith(levelStarting.version)
+      !versionId.startsWith(levelStarting.VERSION)
     ) {
       throw errorResponses.INVALID_DEVICE_ID('version');
+    }
+    return next();
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      err,
+      message: err,
+      code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+    });
+  }
+};
+
+exports.listMasterPrivilegesValidation = async (req, res, next) => {
+  try {
+    const errorsList = [];
+    const { type, model_id: modelId, variant_id: variantId } = req.query;
+
+    if (
+      !type ||
+      typeof type !== 'string' ||
+      !constants.DEVICE_TYPES.includes(type.trim())
+    ) {
+      errorsList.push(errorResponses.INVALID_TYPE);
+    }
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
+      errorsList.push(errorResponses.INVALID_MODEL_ID);
+    }
+    if (
+      variantId &&
+      (typeof variantId !== 'string' ||
+        !variantId.startsWith('va_') ||
+        !modelId)
+    ) {
+      errorsList.push(errorResponses.INVALID_VARIANT_ID);
+    }
+    if (errorsList.length) {
+      throw errorsList.join(', ');
     }
     return next();
   } catch (err) {

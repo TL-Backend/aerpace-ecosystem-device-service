@@ -20,8 +20,5 @@ module.exports = function (app) {
     listDevicePrivilegesValidation,
     getDeviceLevelPrivileges,
   );
-};
-
-module.exports = function (app) {
   app.get('/privileges', listMasterPrivilegesValidation, listMasterPrivileges);
 };

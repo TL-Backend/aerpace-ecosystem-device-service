@@ -9,12 +9,6 @@ exports.dbTables = {
 };
 
 exports.levelStarting = {
-  model: 'm_',
-  variant: 'va_',
-  version: 'ver_',
-};
-
-exports.levelStarting = {
   MODEL: 'm_',
   VARIANT: 'va_',
   VERSION: 'ver_',
