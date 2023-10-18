@@ -41,7 +41,6 @@ exports.errorResponses = {
   INVALID_TYPE: 'invalid device type',
   INVALID_MODEL_ID: 'invalid model id',
   INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
-  INTERNAL_ERROR: 'internal error',
 };
 
 exports.activityStatus = {
