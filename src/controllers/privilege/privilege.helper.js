@@ -14,6 +14,8 @@ const {
   conditions,
   filterConditionQuery,
   getDevicePrivileges,
+  validateActionIds,
+  getActions,
 } = require('./privilege.query');
 
 exports.addPrivilegesToPersonality = async (params) => {
@@ -63,6 +65,7 @@ exports.addPrivilegesToPersonality = async (params) => {
     let effectedPersonalities = [];
     let error = false;
     let errorResponse = {};
+    let personalityExists;
     for (
       let privilegeIndex = 0;
       privilegeIndex < groupedPrivileges?.length;
@@ -76,20 +79,14 @@ exports.addPrivilegesToPersonality = async (params) => {
 
       personality['user_type'] = groupedPrivileges[privilegeIndex].personality;
 
-      const personalityExists = await aergov_device_model_privileges.findOne({
-        where: { user_type: personality['user_type'] },
-        raw: true,
+      personalityExists = await aergov_device_model_privileges.findOne({
+        where: {
+          user_type: personality['user_type'],
+          model_id: modelId,
+          variant_id: variantId,
+          version_id: versionId,
+        },
       });
-
-      if (personalityExists) {
-        errorResponse = {
-          success: false,
-          message: errorResponses.PERSONALITY_ALREADY_EXISTS,
-          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        };
-        error = true;
-        break;
-      }
 
       const validActions = await sequelize.query(validateActionIds, {
         replacements: {
@@ -129,17 +126,22 @@ exports.addPrivilegesToPersonality = async (params) => {
         error = true;
         break;
       }
-
-      personality.privileges = data;
-      personalities.push(personality);
+      if (personalityExists) {
+        personalityExists.privileges = data;
+        personalityExists.save();
+      } else {
+        personality.privileges = data;
+        personalities.push(personality);
+      }
       effectedPersonalities.push(groupedPrivileges[privilegeIndex].personality);
     }
-
     if (error) {
       return new HelperResponse(errorResponse);
     }
 
-    await aergov_device_model_privileges.bulkCreate(personalities);
+    if (!personalityExists) {
+      await aergov_device_model_privileges.bulkCreate(personalities);
+    }
 
     return new HelperResponse({
       success: true,
