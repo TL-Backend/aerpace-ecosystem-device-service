@@ -9,7 +9,12 @@ const {
   aergov_device_variants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
 const { logger } = require('../../utils/logger');
-const { verifyActionsById, getCategoriesQuery } = require('./device.query');
+const {
+  verifyActionsById,
+  getCategoriesQuery,
+  getValidActionsForVariant,
+  getValidActionsForVersion,
+} = require('./device.query');
 const { eachLimitPromise } = require('../../utils/utility');
 
 const createDeviceVersion = async ({
@@ -23,7 +28,7 @@ const createDeviceVersion = async ({
   const transaction = await sequelize.transaction();
   try {
     const validateVersionName = await aergov_device_versions.findAll({
-      where: { name, variant_id: { [Sequelize.Op.ne]: variantId } },
+      where: { name, variant_id: variantId },
     });
 
     if (validateVersionName.length) {
@@ -108,7 +113,39 @@ const addDeviceActions = async ({
         return;
       }
 
-      for (const action of privilege.actions) {
+      let validActions = ``;
+
+      if (versionId && variantId && modelId) {
+        const validActionsQuery = getValidActionsForVersion;
+        let aValidActions = await sequelize.query(validActionsQuery, {
+          replacements: {
+            actions: privilege.actions,
+            model_id: modelId,
+            variant_id: variantId,
+            version_id: versionId,
+          },
+          raw: true,
+        });
+        validActions = aValidActions[0][0].array;
+      }
+      if (variantId && modelId && !versionId) {
+        const validActionsQuery = getValidActionsForVariant;
+        let aValidActions = await sequelize.query(validActionsQuery, {
+          replacements: {
+            actions: privilege.actions,
+            model_id: modelId,
+            variant_id: variantId,
+            version_id: versionId,
+          },
+          raw: true,
+        });
+        validActions = aValidActions[0][0].array;
+      }
+      if (modelId && !variantId && !versionId) {
+        validActions = privilege.actions;
+      }
+
+      for (const action of validActions) {
         await aergov_device_actions.create(
           {
             ...(modelId && { model_id: modelId }),
@@ -161,7 +198,7 @@ const createDeviceVariant = async ({
   const transaction = await sequelize.transaction();
   try {
     const validateVariantName = await aergov_device_variants.findAll({
-      where: { name, model_id: { [Op.ne]: modelId } },
+      where: { name, model_id: modelId },
     });
 
     if (validateVariantName.length) {
