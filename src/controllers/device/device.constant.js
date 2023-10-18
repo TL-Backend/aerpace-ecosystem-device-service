@@ -1,9 +1,16 @@
 exports.successResponses = {
   DEVICE_CREATED: 'Device created successfully',
   ACTIONS_ADDED: 'actions added successfully',
+  COUNT_FETCH_SUCCESSFULL: 'data fetched successful',
+  NO_DATA_FOUND: 'no data found',
+  DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
+  DEVICES_FETCHED_MESSAGE: 'devices fetched successfully',
 };
 
 exports.errorResponses = {
+  INVALID_DEVICE_TYPE: (value) => {
+    return `Invalid device type ${value}`;
+  },
   INVALID_STRING_OR_MISSING_ERROR: (value) => {
     return `${value} should be present and it must be an string`;
   },
@@ -20,4 +27,10 @@ exports.errorResponses = {
   INVALID_MODEL: `Invalid model id.`,
   INVALID_VARIANT: `Invalid variant id.`,
   MODEL_ID_MISSING: `Model Id must be passed.`,
+};
+exports.successResponses = {
+  COUNT_FETCH_SUCCESSFULL: 'data fetched successful',
+  NO_DATA_FOUND: 'no data found',
+  DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
+  DEVICES_FETCHED_MESSAGE: 'devices fetched successfully',
 };

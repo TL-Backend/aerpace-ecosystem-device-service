@@ -16,6 +16,8 @@ const {
   getValidActionsForVersion,
 } = require('./device.query');
 const { eachLimitPromise } = require('../../utils/utility');
+const { getAllDevicesFromType } = require('./device.query');
+const { queries } = require('./device.query');
 
 const createDeviceVersion = async ({
   modelId,
@@ -415,6 +417,44 @@ exports.addDeviceLevel = async (params) => {
       data: null,
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
+    };
+  }
+};
+
+exports.getDevicesDataHelper = async ({ deviceType }) => {
+  try {
+    const devicesQueryResult = await sequelize.query(getAllDevicesFromType, {
+      replacements: {
+        device_type: deviceType,
+      },
+    });
+    return {
+      success: true,
+      data: devicesQueryResult[0][0].data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: error,
+    };
+  }
+};
+
+exports.getDeviceTypes = async () => {
+  try {
+    const counts = await sequelize.query(queries.getDeviceCount);
+    return {
+      success: true,
+      message: successResponses.DATA_FETCH_SUCCESSFULL,
+      data: counts[0],
+    };
+  } catch (err) {
+    logger.error(err);
+    return {
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      message: err.message,
+      data: null,
     };
   }
 };
