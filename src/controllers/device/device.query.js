@@ -99,7 +99,7 @@ SELECT ARRAY(
  );
 `;
 
-exports.getDeviceData = `
+exports.checkDeviceData = `
 SELECT
   CASE
     WHEN NOT EXISTS (
@@ -120,7 +120,7 @@ SELECT
     ELSE false
   END AS Result;
 `;
-exports.getVariantData = `
+exports.checkVariantData = `
 SELECT
   CASE
     WHEN NOT EXISTS (
@@ -140,7 +140,7 @@ SELECT
   END AS Result;
 `;
 
-exports.getModelData = `
+exports.checkModelData = `
 SELECT
 CASE
   WHEN NOT EXISTS (
