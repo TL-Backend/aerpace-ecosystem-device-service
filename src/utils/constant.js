@@ -1,4 +1,6 @@
 exports.dbTables = {
+  MASTER_ACTIONS_TABLE: 'aergov_device_master_actions',
+  ACTION_CATEGORIES_TABLE: 'aergov_action_categories',
   DEVICE_MODELS_TABLE: 'aergov_device_models',
   DEVICE_VARIANT_TABLE: 'aergov_device_variants',
   DEVICE_VERSION_TABLE: 'aergov_device_versions',
