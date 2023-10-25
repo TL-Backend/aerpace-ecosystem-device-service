@@ -5,10 +5,6 @@ const { statusCodes } = require('../../utils/statusCode');
 const {
   constants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
-const { errorMessages } = require('./device.constant');
-const {
-  constants,
-} = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
 
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
   try {

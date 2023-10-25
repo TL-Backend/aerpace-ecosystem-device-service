@@ -14,23 +14,13 @@ const {
   sequelize,
   Sequelize,
   aergov_device_versions,
-  aergov_device_actions,
   aergov_device_models,
   aergov_device_variants,
   aergov_device_actions,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
 const { logger } = require('../../utils/logger');
-const { statusCodes } = require('../../utils/statusCode');
-const {
-  verifyActionsById,
-  getCategoriesQuery,
-  getValidActionsForVariant,
-  getValidActionsForVersion,
-} = require('./device.query');
 const { eachLimitPromise } = require('../../utils/utility');
-const { getAllDevicesFromType } = require('./device.query');
 const { queries } = require('./device.query');
-const { successResponses, errorResponses } = require('./device.constant');
 
 const createDeviceVersion = async ({
   modelId,
