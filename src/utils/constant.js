@@ -9,7 +9,6 @@ exports.dbTables = {
   ACTION_CATEGORIES: `aergov_action_categories`,
   DEVICE_ACTION_CATEGORIES: 'aergov_action_categories',
   DEVICE_MODEL_PRIVILEGES: `aergov_device_model_privileges`,
-  DEVICE_ACTIONS: 'aergov_device_actions',
 };
 
 exports.levelStarting = {
