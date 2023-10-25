@@ -5,6 +5,8 @@ exports.successResponses = {
   NO_DATA_FOUND: 'no data found',
   DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
   DEVICES_FETCHED_MESSAGE: 'devices fetched successfully',
+  DEVICES_EDITED_SUCCESSFULLY: 'Devices edited successfully',
+  ENTRIES_DELETED_SUCCESSFUL: 'Entries deleted successfully',
 };
 
 exports.errorResponses = {
@@ -26,11 +28,18 @@ exports.errorResponses = {
   IMPROPER_CATEGORY_OR_ACTIONS: `Please enter proper category id or proper actions.`,
   INVALID_MODEL: `Invalid model id.`,
   INVALID_VARIANT: `Invalid variant id.`,
+  UNABLE_TO_PERFORM_EDIT_OPERATION:
+    'Unable to perform edit operation for device details',
   MODEL_ID_MISSING: `Model Id must be passed.`,
+  NO_VALID_ACTIONS_TO_UPDATE: `No valid actions to update.`,
 };
 exports.successResponses = {
   COUNT_FETCH_SUCCESSFULL: 'data fetched successful',
   NO_DATA_FOUND: 'no data found',
-  DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
   DEVICES_FETCHED_MESSAGE: 'devices fetched successfully',
+};
+
+exports.status = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
 };
