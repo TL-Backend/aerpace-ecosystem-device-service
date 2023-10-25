@@ -6,6 +6,7 @@ const {
 const { statusCodes } = require('../../utils/statusCode');
 const {
   getDevicesDataHelper,
+  editDevicesHelper,
   deleteVersionHelper,
 } = require('./device.helper');
 const messages = require('./device.constant');
@@ -61,6 +62,37 @@ exports.listDevicesTypes = async (req, res, next) => {
       res,
       code: statusCodes.STATUS_CODE_FAILURE,
       error: errorResponses.INTERNAL_ERROR,
+    });
+  }
+};
+
+exports.editDevices = async (req, res, next) => {
+  try {
+    const { success, message, errorCode, data } = await editDevicesHelper(
+      req.body,
+    );
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        message,
+        code: errorCode,
+      });
+    }
+    return successResponse({
+      req,
+      res,
+      data,
+      message,
+      code: statusCodes.STATUS_CODE_SUCCESS,
+    });
+  } catch (err) {
+    logger.error(err.message);
+    return errorResponse({
+      req,
+      res,
+      message: err.message,
+      code: statusCodes.STATUS_CODE_FAILURE,
     });
   }
 };

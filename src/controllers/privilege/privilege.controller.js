@@ -1,14 +1,45 @@
 const { logger } = require('../../utils/logger');
 const {
-  errorResponse,
   successResponse,
+  errorResponse,
 } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { errorResponses } = require('./privilege.constant');
 const {
+  addPrivilegesToPersonality,
   listDeviceLevelPrivileges,
   listMasterPrivileges,
 } = require('./privilege.helper');
+const { errorResponses, successResponses } = require('./privilege.constant');
+
+exports.addPersonalityPrivileges = async (req, res, next) => {
+  try {
+    const { errorCode, message, data, success } =
+      await addPrivilegesToPersonality(req.body);
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        code: errorCode,
+        message,
+      });
+    }
+
+    return successResponse({
+      req,
+      res,
+      data,
+      message,
+    });
+  } catch (err) {
+    logger.error(err.message);
+    return errorResponse({
+      req,
+      res,
+      code: statusCodes.STATUS_CODE_FAILURE,
+      message: err.message,
+    });
+  }
+};
 
 exports.getDeviceLevelPrivileges = async (req, res, next) => {
   try {
