@@ -1,6 +1,7 @@
 const {
   getDevicesList,
   listDevicesTypes,
+  editDevices,
   getPersonalityDetails,
 } = require('../controllers/device/device.controller');
 
@@ -17,4 +18,5 @@ module.exports = function (app) {
     getPersonalityDetails,
   );
   app.get('/devices/:device_type', validateGetDevicesTypeInput, getDevicesList);
+  app.patch('/devices', validateDeviceInput, editDevices);
 };
