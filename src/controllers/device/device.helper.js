@@ -57,7 +57,7 @@ const createDeviceVersion = async ({
       { transaction },
     );
 
-    const { success, message, errorCode } = this.addDeviceActions({
+    const { success, message, errorCode } = await this.addDeviceActions({
       modelId,
       variantId,
       versionId: addVersion.id,
