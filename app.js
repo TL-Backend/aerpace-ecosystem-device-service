@@ -1,6 +1,7 @@
 'use strict';
 
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const app = express();
 app.disable('x-powered-by');
@@ -11,6 +12,12 @@ const { router } = require('./src/routes/index');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+  cors({
+    origin: `${process.env.HOST_URL}`,
+  }),
+);
 
 app.use('/api/v1', router);
 
