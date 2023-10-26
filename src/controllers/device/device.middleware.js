@@ -32,7 +32,6 @@ exports.validateDeviceInput = async (req, res, next) => {
       privileges,
       model_id: modelId = null,
       variant_id: variantId = null,
-      version_id: versionId = null,
       status,
       type,
     } = req.body;
