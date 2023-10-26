@@ -32,11 +32,8 @@ exports.errorResponses = {
     'Unable to perform edit operation for device details',
   MODEL_ID_MISSING: `Model Id must be passed.`,
   NO_VALID_ACTIONS_TO_UPDATE: `No valid actions to update.`,
-};
-exports.successResponses = {
-  COUNT_FETCH_SUCCESSFULL: 'data fetched successful',
-  NO_DATA_FOUND: 'no data found',
-  DEVICES_FETCHED_MESSAGE: 'devices fetched successfully',
+  INVALID_VERSION_ID_TYPE: `Version id should be of type string and should start with ver_ .`,
+  MODEL_OR_VARIANT_ID_MISSING: `Model Id or Variant Id is missing.`,
 };
 
 exports.status = {

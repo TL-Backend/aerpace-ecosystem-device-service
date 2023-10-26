@@ -57,7 +57,7 @@ const createDeviceVersion = async ({
       { transaction },
     );
 
-    const { success, message, errorCode } = await addDeviceActions({
+    const { success, message, errorCode } = this.addDeviceActions({
       modelId,
       variantId,
       versionId: addVersion.id,
@@ -89,7 +89,7 @@ const createDeviceVersion = async ({
   }
 };
 
-const addDeviceActions = async ({
+exports.addDeviceActions = async ({
   modelId,
   variantId,
   versionId,
@@ -226,7 +226,7 @@ const createDeviceVariant = async ({
       { transaction },
     );
 
-    const { success, message } = await addDeviceActions({
+    const { success, message } = await this.addDeviceActions({
       modelId,
       variantId: addVariant.id,
       privileges,
@@ -283,7 +283,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
       { transaction },
     );
 
-    const { success, message } = await addDeviceActions({
+    const { success, message } = await this.addDeviceActions({
       modelId: addModel.id,
       privileges,
       type,
@@ -329,7 +329,6 @@ exports.addDeviceLevel = async (params) => {
       type,
       privileges,
     } = params;
-
     if (modelId && variantId) {
       const modelValidation = await aergov_device_models.findAll({
         where: { id: modelId },
