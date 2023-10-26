@@ -159,16 +159,27 @@ END AS Result;
 `;
 
 exports.getPersonalityPrivileges = `
-    SELECT     
+SELECT
     json_agg(
         json_build_object(
-            'name',
-            user_type,
-            'privileges',
-            privileges
+            'name', user_type,
+            'privileges', COALESCE(
+                (SELECT json_agg(
+                    json_build_object(
+                        'category_id', value->>'category_id',
+                        'category_name', value->>'category_name',
+                        'action_id', value->>'action_id',
+                        'action_name', value->>'action_name',
+                        'effective_level', value->>'effective_level',
+                        'effective_level_id', value->>'effective_level_id'
+                    )
+                ) 
+                FROM jsonb_each(privileges)),
+                json_build_array()
+            )
         )
-    ) AS persoanlities
-    FROM ${dbTables.DEVICE_MODEL_PRIVILEGES}
+    ) AS personalities
+FROM aergov_device_model_privileges
     WHERE
     model_id = :model_id
     AND variant_id = :variant_id

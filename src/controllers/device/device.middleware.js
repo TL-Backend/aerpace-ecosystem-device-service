@@ -139,21 +139,21 @@ exports.validateGetPersonalityPrivilegesInput = async (req, res, next) => {
     if (
       !model_id ||
       typeof model_id !== 'string' ||
-      !model_id.startsWith(levelStarting.model)
+      !model_id.startsWith(levelStarting.MODEL)
     ) {
       errorList.push(errorResponses.MODEL_ID_INVALID);
     }
     if (
       !variant_id ||
       typeof variant_id !== 'string' ||
-      !variant_id.startsWith(levelStarting.variant)
+      !variant_id.startsWith(levelStarting.VARIANT)
     ) {
       errorList.push(errorResponses.VARIANT_ID_INVALID);
     }
     if (
       !version_id ||
       typeof version_id !== 'string' ||
-      !version_id.startsWith(levelStarting.version)
+      !version_id.startsWith(levelStarting.VERSION)
     ) {
       errorList.push(errorResponses.VERSION_ID_INVALID);
     }

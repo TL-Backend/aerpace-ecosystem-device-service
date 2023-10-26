@@ -8,6 +8,7 @@ const {
 const {
   validateGetDevicesTypeInput,
   validateGetPersonalityPrivilegesInput,
+  validateDeviceInput,
 } = require('../controllers/device/device.middleware');
 
 module.exports = function (app) {

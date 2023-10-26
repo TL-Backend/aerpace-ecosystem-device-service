@@ -292,13 +292,14 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
         version_id: params.version_id,
       },
     });
+    console.log(personalityData[0][0].personalities);
     return {
       success: true,
       errorCode: statusCodes.STATUS_CODE_SUCCESS,
       message: successResponses.DATA_FETCH_SUCCESSFULL,
       data: {
-        persoanlities: personalityData[0][0].persoanlities
-          ? personalityData[0][0].persoanlities
+        personalities: personalityData[0][0].personalities
+          ? personalityData[0][0].personalities
           : [],
       },
     };
