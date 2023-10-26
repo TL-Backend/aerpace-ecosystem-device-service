@@ -35,71 +35,22 @@ exports.validateDeviceInput = async (req, res, next) => {
       status,
       type,
     } = req.body;
-    const errorsList = [];
+    let errorsList = [];
 
-    if (name && typeof name !== 'string') {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
-    }
-
-    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
-      errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
-    }
-
-    if (variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_ID_MISSING);
-    }
-
-    if (
-      variantId &&
-      (typeof variantId !== 'string' || !variantId.startsWith('va_'))
-    ) {
-      errorsList.push(errorResponses.INVALID_VARIANT_ID_TYPE);
-    }
-
-    if (
-      !status ||
-      typeof status !== 'string' ||
-      !constants.DEVICE_STATUS.includes(status)
-    ) {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('status'));
-    }
-
-    if (
-      !type ||
-      typeof type !== 'string' ||
-      !constants.DEVICE_TYPES.includes(type)
-    ) {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('type'));
-    }
-
-    if (!privileges || typeof privileges !== 'object') {
-      errorsList.push(
-        errorResponses.INVALID_STRING_OR_MISSING_ERROR('privileges'),
-      );
-    }
-
-    if (privileges) {
-      let errors = [];
-      privileges.forEach((privilege) => {
-        if (privilege) {
-          if (
-            !privilege.category_id ||
-            typeof privilege.category_id !== 'number'
-          ) {
-            errors.push(errorResponses.INVALID_CATEGORY_ID);
-          }
-
-          if (!privilege.actions || typeof privilege.actions !== 'object') {
-            errors.push(errorResponses.INVALID_ACTIONS);
-          }
-        }
+    const { error, errorsList: errorList } =
+      this.validateAddAndEditCommonInputs({
+        errorsList,
+        modelId,
+        variantId,
+        status,
+        type,
+        name,
+        privileges,
       });
-
-      if (errors.length) {
-        logger.error(errors);
-        errorsList.push(...new Set(errors));
-      }
+    if (error) {
+      throw error;
     }
+    errorsList = errorList;
 
     if (errorsList.length) {
       throw errorsList.join(', ');
@@ -129,8 +80,59 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       status,
       type,
     } = req.body;
-    const errorsList = [];
+    let errorsList = [];
+    const { error, errorsList: errorList } =
+      this.validateAddAndEditCommonInputs({
+        errorsList,
+        modelId,
+        variantId,
+        status,
+        type,
+        name,
+        privileges,
+      });
+    if (error) {
+      throw error;
+    }
+    errorsList = errorList;
 
+    if (versionId && !variantId && !modelId) {
+      errorsList.push(errorResponses.MODEL_OR_VARIANT_ID_MISSING);
+    }
+
+    if (
+      versionId &&
+      (typeof versionId !== 'string' || !versionId.startsWith('ver_'))
+    ) {
+      errorsList.push(errorResponses.INVALID_VERSION_ID_TYPE);
+    }
+    if (errorsList.length) {
+      throw errorsList.join(', ');
+    }
+
+    return next();
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      error: err,
+      message: err,
+      code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+    });
+  }
+};
+
+exports.validateAddAndEditCommonInputs = ({
+  errorsList,
+  modelId,
+  variantId,
+  status,
+  type,
+  name,
+  privileges,
+}) => {
+  try {
     if (name && typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
@@ -147,17 +149,6 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       (typeof variantId !== 'string' || !variantId.startsWith('va_'))
     ) {
       errorsList.push(errorResponses.INVALID_VARIANT_ID_TYPE);
-    }
-
-    if (versionId && !variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_OR_VARIANT_ID_MISSING);
-    }
-
-    if (
-      versionId &&
-      (typeof versionId !== 'string' || !versionId.startsWith('ver_'))
-    ) {
-      errorsList.push(errorResponses.INVALID_VERSION_ID_TYPE);
     }
 
     if (
@@ -204,20 +195,13 @@ exports.validateEditDeviceInput = async (req, res, next) => {
         errorsList.push(...new Set(errors));
       }
     }
-
-    if (errorsList.length) {
-      throw errorsList.join(', ');
-    }
-
-    return next();
+    return {
+      errorsList,
+    };
   } catch (err) {
     logger.error(err);
-    return errorResponse({
-      req,
-      res,
+    return {
       error: err,
-      message: err,
-      code: statusCodes.STATUS_CODE_INVALID_FORMAT,
-    });
+    };
   }
 };
