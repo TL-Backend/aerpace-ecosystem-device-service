@@ -42,7 +42,7 @@ exports.validateDeviceInput = async (req, res, next) => {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
 
-    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }
 
@@ -135,8 +135,7 @@ exports.validateEditDeviceInput = async (req, res, next) => {
     if (name && typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
-
-    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
+    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }
 
