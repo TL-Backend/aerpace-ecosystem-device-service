@@ -95,7 +95,7 @@ exports.listDevicePrivilegesValidation = async (req, res, next) => {
       typeof versionId !== 'string' ||
       !versionId.startsWith(levelStarting.VERSION)
     ) {
-      throw errorResponses.INVALID_DEVICE_ID('version');
+      throw errorResponses.INVALID_DEVICE_ID('VERSION');
     }
     return next();
   } catch (err) {

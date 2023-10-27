@@ -3,7 +3,7 @@ const { levelStarting } = require('../../utils/constant');
 exports.successResponses = {
   NO_DATA_FOUND: 'no data found',
   PRIVILEGES_ADDED: 'privileges were added to a personality successfully',
-  DATA_FETCH_SUCCESSFULL: 'data fetched successfully',
+  DATA_FETCH_SUCCESSFUL: 'data fetched successfully',
 };
 
 exports.errorResponses = {

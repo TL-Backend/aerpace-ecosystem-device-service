@@ -3,12 +3,14 @@ const {
   listDevicesTypes,
   editDevices,
   getPersonalityDetails,
+  createDeviceLevel,
 } = require('../controllers/device/device.controller');
 
 const {
   validateGetDevicesTypeInput,
   validateGetPersonalityPrivilegesInput,
   validateDeviceInput,
+  validateEditDeviceInput,
 } = require('../controllers/device/device.middleware');
 
 module.exports = function (app) {
@@ -19,5 +21,6 @@ module.exports = function (app) {
     getPersonalityDetails,
   );
   app.get('/devices/:device_type', validateGetDevicesTypeInput, getDevicesList);
-  app.patch('/devices', validateDeviceInput, editDevices);
+  app.post('/devices/device-level', validateDeviceInput, createDeviceLevel);
+  app.patch('/devices', validateEditDeviceInput, editDevices);
 };
