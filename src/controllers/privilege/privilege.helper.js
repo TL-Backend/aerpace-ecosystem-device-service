@@ -97,7 +97,6 @@ exports.addPrivilegesToPersonality = async (params) => {
         },
         raw: true,
       });
-
       if (!validActions[0][0]?.result) {
         errorResponse = {
           success: false,
@@ -276,7 +275,7 @@ exports.listDeviceLevelPrivileges = async ({ versionId }) => {
       data: {
         privileges: privilegesData[0].data,
       },
-      message: successResponses.DATA_FETCH_SUCCESSFULL,
+      message: successResponses.DATA_FETCH_SUCCESSFUL,
     };
   } catch (err) {
     logger.error(err);
@@ -301,14 +300,14 @@ const validateCondition = async ({ checkCondition, modelId, variantId }) => {
 };
 
 const getPrivilegesData = async ({ queryCondition, type }) => {
-  const previlegesData = await sequelize.query(
+  const privilegesData = await sequelize.query(
     getPrivileges.replace(`{{queryCondition}}`, queryCondition),
     {
       replacements: { type },
       type: sequelize.QueryTypes.SELECT,
     },
   );
-  return previlegesData;
+  return privilegesData;
 };
 
 exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
@@ -343,14 +342,14 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
       };
     }
 
-    const previlegesData = await getPrivilegesData({
+    const privilegesData = await getPrivilegesData({
       queryCondition: filterCondition,
       type,
     });
     return {
       success: true,
-      message: successResponses.DATA_FETCH_SUCCESSFULL,
-      data: previlegesData,
+      message: successResponses.DATA_FETCH_SUCCESSFUL,
+      data: privilegesData,
     };
   } catch (err) {
     logger.error(err);

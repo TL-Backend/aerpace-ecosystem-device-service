@@ -40,9 +40,9 @@ SELECT
                 ),'[]')
                 ) AS result
             FROM
-                ${dbTables.DEVICE_ACTIONS_TABLE} AS ada
-                LEFT JOIN ${dbTables.DEVICE_MASTER_ACTION_TABLE} AS adma ON adma.id = ada.action_id
-                LEFT JOIN ${dbTables.DEVICE_ACTIONS_CATEGORY} AS aac ON aac.id = ada.category_id
+                ${dbTables.DEVICE_ACTIONS} AS ada
+                LEFT JOIN ${dbTables.DEVICE_MASTER_ACTIONS} AS adma ON adma.id = ada.action_id
+                LEFT JOIN ${dbTables.DEVICE_ACTION_CATEGORIES} AS aac ON aac.id = ada.category_id
             WHERE (
                     model_id = adve.model_id
                     AND variant_id IS NULL
