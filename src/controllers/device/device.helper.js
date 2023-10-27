@@ -292,7 +292,16 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
         version_id: params.version_id,
       },
     });
-    console.log(personalityData[0][0].personalities);
+    const personalities = personalityData[0][0].personalities
+      ? personalityData[0][0].personalities.forEach((currentItem) => {
+          const privilegesList = currentItem.privileges
+            ? Object.keys(currentItem.privileges).map((identifier) => ({
+                ...currentItem.privileges[identifier],
+              }))
+            : [];
+          currentItem.privileges = privilegesList;
+        })
+      : {};
     return {
       success: true,
       errorCode: statusCodes.STATUS_CODE_SUCCESS,
