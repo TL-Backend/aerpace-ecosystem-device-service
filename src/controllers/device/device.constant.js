@@ -13,6 +13,9 @@ exports.errorResponses = {
   INVALID_DEVICE_TYPE: (value) => {
     return `Invalid device type ${value}`;
   },
+  MODEL_ID_INVALID: 'Invalid model',
+  VARIANT_ID_INVALID: 'Invalid variant',
+  VERSION_ID_INVALID: 'Invalid version',
   INVALID_STRING_OR_MISSING_ERROR: (value) => {
     return `${value} should be present and it must be an string`;
   },

@@ -6,6 +6,7 @@ const {
   getValidActionsForVariant,
   checkDeviceData,
   checkVariantData,
+  getPersonalityPrivileges,
   checkModelData,
 } = require('./device.query');
 const { statusCodes } = require('../../utils/statusCode');
@@ -17,6 +18,7 @@ const {
   aergov_device_models,
   aergov_device_variants,
   aergov_device_actions,
+  aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
 const { logger } = require('../../utils/logger');
 const { eachLimitPromise } = require('../../utils/utility');
@@ -570,6 +572,46 @@ exports.editDevicesHelper = async (params) => {
       success: false,
       message: err.message,
       errorCode: errorResponses.INTERNAL_ERROR,
+      data: null,
+    };
+  }
+};
+
+exports.getPersonalityPrivilegesHelper = async ({ params }) => {
+  try {
+    const personalityData = await sequelize.query(getPersonalityPrivileges, {
+      replacements: {
+        model_id: params.model_id,
+        variant_id: params.variant_id,
+        version_id: params.version_id,
+      },
+    });
+    const personalities = personalityData[0][0].personalities
+      ? personalityData[0][0].personalities.forEach((currentItem) => {
+          const privilegesList = currentItem.privileges
+            ? Object.keys(currentItem.privileges).map((identifier) => ({
+                ...currentItem.privileges[identifier],
+              }))
+            : [];
+          currentItem.privileges = privilegesList;
+        })
+      : {};
+    return {
+      success: true,
+      errorCode: statusCodes.STATUS_CODE_SUCCESS,
+      message: successResponses.DATA_FETCH_SUCCESSFULL,
+      data: {
+        personalities: personalityData[0][0].personalities
+          ? personalityData[0][0].personalities
+          : [],
+      },
+    };
+  } catch (err) {
+    logger.error(err.message);
+    return {
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      message: errorResponses.INTERNAL_ERROR,
       data: null,
     };
   }

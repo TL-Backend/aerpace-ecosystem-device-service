@@ -2,6 +2,8 @@ const { errorResponses } = require('./device.constant');
 const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
+const { errorMessages } = require('./device.constant');
+const { levelStarting } = require('../../utils/constant');
 const {
   constants,
 } = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
@@ -203,5 +205,45 @@ exports.validateAddAndEditCommonInputs = ({
     return {
       error: err,
     };
+  }
+};
+
+exports.validateGetPersonalityPrivilegesInput = async (req, res, next) => {
+  try {
+    const { model_id, variant_id, version_id } = req.query;
+    let errorList = [];
+    if (
+      !model_id ||
+      typeof model_id !== 'string' ||
+      !model_id.startsWith(levelStarting.MODEL)
+    ) {
+      errorList.push(errorResponses.MODEL_ID_INVALID);
+    }
+    if (
+      !variant_id ||
+      typeof variant_id !== 'string' ||
+      !variant_id.startsWith(levelStarting.VARIANT)
+    ) {
+      errorList.push(errorResponses.VARIANT_ID_INVALID);
+    }
+    if (
+      !version_id ||
+      typeof version_id !== 'string' ||
+      !version_id.startsWith(levelStarting.VERSION)
+    ) {
+      errorList.push(errorResponses.VERSION_ID_INVALID);
+    }
+    if (errorList.length) {
+      throw errorList.join(', ');
+    }
+    return next();
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      message: err,
+      code: statusCodes.STATUS_CODE_INVALID_FORMAT,
+    });
   }
 };
