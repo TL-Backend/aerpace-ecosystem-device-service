@@ -146,12 +146,12 @@ CASE
   WHEN NOT EXISTS (
     SELECT *
     FROM ${dbTables.DEVICE_VARIANT_TABLE}
-    WHERE model_id = 'm_3'
+    WHERE model_id = :model_id
   )
   AND EXISTS (
     SELECT *
     FROM ${dbTables.DEVICE_MODELS_TABLE}
-    WHERE id = 'm_3'
+    WHERE id = :model_id
   )
   THEN true
   ELSE false
