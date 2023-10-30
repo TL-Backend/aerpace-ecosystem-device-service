@@ -144,12 +144,12 @@ exports.checkModelData = `
 SELECT
 CASE
   WHEN NOT EXISTS (
-    SELECT *
+    SELECT 1
     FROM ${dbTables.DEVICE_VARIANT_TABLE}
     WHERE model_id = :model_id
   )
   AND EXISTS (
-    SELECT *
+    SELECT 1
     FROM ${dbTables.DEVICE_MODELS_TABLE}
     WHERE id = :model_id
   )
@@ -164,7 +164,7 @@ json_agg(
     json_build_object(
         'name',
         user_type,
-        'privileges',
+       'privileges', 
         privileges
     )
 ) AS personalities
