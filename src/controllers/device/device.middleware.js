@@ -42,7 +42,6 @@ exports.validateDeviceInput = async (req, res, next) => {
     if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }
-
     const { error, errorsList: errorList } =
       this.validateAddAndEditCommonInputs({
         errorsList,
