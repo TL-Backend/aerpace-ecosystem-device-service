@@ -8,14 +8,14 @@ exports.getAllDevicesFromType = `SELECT
                 'model', json_build_object(
                     'id', dm.id,
                     'name', dm.name,
-                    'status', 'dm.status',
+                    'status', dm.status,
                     'variants', COALESCE(
                         (
                             SELECT json_agg(
                                 json_build_object(
                                     'id', dv.id,
                                     'name', dv.name,
-                                    'status', 'dv.status',
+                                    'status', dv.status,
                                     'versions', COALESCE(
                                         (
                                             SELECT json_agg(
