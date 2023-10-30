@@ -8,14 +8,14 @@ exports.getAllDevicesFromType = `SELECT
                 'model', json_build_object(
                     'id', dm.id,
                     'name', dm.name,
-                    'status', '',
+                    'status', 'dm.status',
                     'variants', COALESCE(
                         (
                             SELECT json_agg(
                                 json_build_object(
                                     'id', dv.id,
                                     'name', dv.name,
-                                    'status', '',
+                                    'status', 'dv.status',
                                     'versions', COALESCE(
                                         (
                                             SELECT json_agg(
@@ -42,7 +42,7 @@ exports.getAllDevicesFromType = `SELECT
         ),
         '[]'
     ) AS data
-FROM aergov_device_models AS dm
+FROM ${dbTables.DEVICE_MODELS_TABLE} AS dm
 WHERE dm.device_type = :device_type`;
 
 exports.queries = {
@@ -79,7 +79,7 @@ SELECT ARRAY(
      FROM unnest(ARRAY[:actions]) AS input_action_id
      WHERE NOT EXISTS (
          SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS_TABLE} ada
+         FROM ${dbTables.DEVICE_ACTIONS} ada
          WHERE ada.action_id = input_action_id
          AND (ada.model_id = :model_id AND ada.variant_id = :variant_id AND ada.version_id IS NULL )
      )
@@ -92,7 +92,7 @@ SELECT ARRAY(
      FROM unnest(ARRAY[:actions]) AS input_action_id
      WHERE NOT EXISTS (
          SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS_TABLE} ada
+         FROM ${dbTables.DEVICE_ACTIONS} ada
          WHERE ada.action_id = input_action_id
          AND (ada.model_id = :model_id AND ada.variant_id IS NULL)
      )
@@ -104,14 +104,14 @@ SELECT
   CASE
     WHEN NOT EXISTS (
       SELECT 1
-      FROM aergov_device_model_privileges
+      FROM ${dbTables.DEVICE_MODEL_PRIVILEGES}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
       AND version_id = :version_id
     )
     AND EXISTS (
       SELECT 1
-      FROM aergov_device_versions
+      FROM ${dbTables.DEVICE_VERSION_TABLE}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
       AND id = :version_id
@@ -125,13 +125,13 @@ SELECT
   CASE
     WHEN NOT EXISTS (
       SELECT 1
-      FROM aergov_device_versions
+      FROM ${dbTables.DEVICE_VERSION_TABLE}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
     )
     AND EXISTS (
       SELECT 1
-      FROM aergov_device_variants
+      FROM ${dbTables.DEVICE_VARIANT_TABLE}
       WHERE model_id = :model_id
       AND id = :variant_id
     )
@@ -145,12 +145,12 @@ SELECT
 CASE
   WHEN NOT EXISTS (
     SELECT *
-    FROM aergov_device_variants
+    FROM ${dbTables.DEVICE_VARIANT_TABLE}
     WHERE model_id = 'm_3'
   )
   AND EXISTS (
     SELECT *
-    FROM aergov_device_models
+    FROM ${dbTables.DEVICE_MODELS_TABLE}
     WHERE id = 'm_3'
   )
   THEN true
