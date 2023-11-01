@@ -484,6 +484,7 @@ exports.editDevicesHelper = async (params) => {
         type: sequelize.QueryTypes.SELECT,
       });
       if (!validateVersions[0].result) {
+        await transaction.rollback();
         return {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -503,6 +504,7 @@ exports.editDevicesHelper = async (params) => {
         type: sequelize.QueryTypes.SELECT,
       });
       if (!validateDeviceVariant[0].result) {
+        await transaction.rollback();
         return {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -520,6 +522,7 @@ exports.editDevicesHelper = async (params) => {
         type: sequelize.QueryTypes.SELECT,
       });
       if (!validateDeviceVariant[0].result) {
+        await transaction.rollback();
         return {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
