@@ -8,14 +8,14 @@ exports.getAllDevicesFromType = `SELECT
                 'model', json_build_object(
                     'id', dm.id,
                     'name', dm.name,
-                    'status', '',
+                    'status', dm.status,
                     'variants', COALESCE(
                         (
                             SELECT json_agg(
                                 json_build_object(
                                     'id', dv.id,
                                     'name', dv.name,
-                                    'status', '',
+                                    'status', dv.status,
                                     'versions', COALESCE(
                                         (
                                             SELECT json_agg(
@@ -42,7 +42,7 @@ exports.getAllDevicesFromType = `SELECT
         ),
         '[]'
     ) AS data
-FROM aergov_device_models AS dm
+FROM ${dbTables.DEVICE_MODELS_TABLE} AS dm
 WHERE dm.device_type = :device_type`;
 
 exports.queries = {
@@ -62,41 +62,47 @@ exports.getCategoriesQuery = `
 `;
 
 exports.verifyActionsById = `
-     WITH actions_to_check AS (
-       SELECT unnest(ARRAY [:actions]) AS action
-     )
-     SELECT CASE
-              WHEN COUNT(DISTINCT af.id) = (SELECT COUNT(*) FROM actions_to_check) THEN true
-              ELSE false
-          END AS result
-     FROM actions_to_check itc
-          LEFT JOIN ${dbTables.MASTER_ACTIONS_TABLE} as af ON itc.action = af.id;
+  WITH actions_to_check AS (
+    SELECT unnest(ARRAY [:actions]) AS action
+  )
+  SELECT CASE
+           WHEN COUNT(DISTINCT af.id) = (SELECT COUNT(*) FROM actions_to_check) THEN true
+           ELSE false
+       END AS result
+  FROM actions_to_check itc
+       LEFT JOIN aergov_device_master_actions as af ON itc.action = af.id
+  WHERE af.device_type = :type;
 `;
 
 exports.getValidActionsForVersion = `
 SELECT ARRAY(
-     SELECT DISTINCT input_action_id
-     FROM unnest(ARRAY[:actions]) AS input_action_id
-     WHERE NOT EXISTS (
-         SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS_TABLE} ada
-         WHERE ada.action_id = input_action_id
-         AND (ada.model_id = :model_id AND ada.variant_id = :variant_id AND ada.version_id IS NULL )
-     )
- );
+  SELECT DISTINCT input_action_id
+  FROM unnest(ARRAY[:actions]) AS input_action_id
+  WHERE NOT EXISTS (
+      SELECT 1
+      FROM ${dbTables.DEVICE_ACTIONS} ada
+      WHERE (
+          (ada.action_id = input_action_id)
+          AND (
+              (ada.model_id = :model_id AND ada.variant_id IS NULL AND ada.version_id IS NULL)
+              OR (ada.model_id = :model_id AND ada.variant_id = :variant_id AND ada.version_id IS NULL)
+          )
+      )
+  )
+);
 `;
 
 exports.getValidActionsForVariant = `
 SELECT ARRAY(
-     SELECT DISTINCT input_action_id
-     FROM unnest(ARRAY[:actions]) AS input_action_id
-     WHERE NOT EXISTS (
-         SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS_TABLE} ada
-         WHERE ada.action_id = input_action_id
-         AND (ada.model_id = :model_id AND ada.variant_id IS NULL)
-     )
- );
+  SELECT DISTINCT input_action_id
+  FROM unnest(ARRAY[:actions]) AS input_action_id
+  WHERE NOT EXISTS (
+      SELECT 1
+      FROM ${dbTables.DEVICE_ACTIONS} ada
+      WHERE (ada.action_id = input_action_id)
+      AND (ada.model_id = :model_id AND ada.variant_id IS NULL)
+  )
+);
 `;
 
 exports.checkDeviceData = `
@@ -104,14 +110,14 @@ SELECT
   CASE
     WHEN NOT EXISTS (
       SELECT 1
-      FROM aergov_device_model_privileges
+      FROM ${dbTables.DEVICE_MODEL_PRIVILEGES}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
       AND version_id = :version_id
     )
     AND EXISTS (
       SELECT 1
-      FROM aergov_device_versions
+      FROM ${dbTables.DEVICE_VERSION_TABLE}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
       AND id = :version_id
@@ -125,13 +131,13 @@ SELECT
   CASE
     WHEN NOT EXISTS (
       SELECT 1
-      FROM aergov_device_versions
+      FROM ${dbTables.DEVICE_VERSION_TABLE}
       WHERE model_id = :model_id
       AND variant_id = :variant_id
     )
     AND EXISTS (
       SELECT 1
-      FROM aergov_device_variants
+      FROM ${dbTables.DEVICE_VARIANT_TABLE}
       WHERE model_id = :model_id
       AND id = :variant_id
     )
@@ -144,14 +150,14 @@ exports.checkModelData = `
 SELECT
 CASE
   WHEN NOT EXISTS (
-    SELECT *
-    FROM aergov_device_variants
-    WHERE model_id = 'm_3'
+    SELECT 1
+    FROM ${dbTables.DEVICE_VARIANT_TABLE}
+    WHERE model_id = :model_id
   )
   AND EXISTS (
-    SELECT *
-    FROM aergov_device_models
-    WHERE id = 'm_3'
+    SELECT 1
+    FROM ${dbTables.DEVICE_MODELS_TABLE}
+    WHERE id = :model_id
   )
   THEN true
   ELSE false
@@ -164,7 +170,7 @@ json_agg(
     json_build_object(
         'name',
         user_type,
-        'privileges',
+       'privileges', 
         privileges
     )
 ) AS personalities

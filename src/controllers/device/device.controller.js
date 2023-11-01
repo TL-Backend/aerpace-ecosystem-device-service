@@ -108,6 +108,7 @@ exports.editDevices = async (req, res, next) => {
       return errorResponse({
         req,
         res,
+        data: {},
         message,
         code: errorCode,
       });

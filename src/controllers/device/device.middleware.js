@@ -1,4 +1,4 @@
-const { errorResponses } = require('./device.constant');
+const { errorResponses, deviceTypes } = require('./device.constant');
 const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
@@ -39,6 +39,9 @@ exports.validateDeviceInput = async (req, res, next) => {
     } = req.body;
     let errorsList = [];
 
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
+      errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
+    }
     const { error, errorsList: errorList } =
       this.validateAddAndEditCommonInputs({
         errorsList,
@@ -83,6 +86,11 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       type,
     } = req.body;
     let errorsList = [];
+
+    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
+      errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
+    }
+
     const { error, errorsList: errorList } =
       this.validateAddAndEditCommonInputs({
         errorsList,
@@ -138,9 +146,6 @@ exports.validateAddAndEditCommonInputs = ({
     if (name && typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
-    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
-      errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
-    }
 
     if (variantId && !modelId) {
       errorsList.push(errorResponses.MODEL_ID_MISSING);
@@ -161,12 +166,8 @@ exports.validateAddAndEditCommonInputs = ({
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('status'));
     }
 
-    if (
-      !type ||
-      typeof type !== 'string' ||
-      !constants.DEVICE_TYPES.includes(type)
-    ) {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('type'));
+    if (!type || typeof type !== 'string' || type !== deviceTypes.CAR) {
+      errorsList.push(errorResponses.MISSING_INVALID_DEVICE_TYPE);
     }
 
     if (!privileges || typeof privileges !== 'object') {

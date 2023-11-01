@@ -1,0 +1,14 @@
+
+PORT=3002
+
+DB_DATABASE = "aerpace_ecosystem_db"
+DB_USERNAME="aerpace_db"
+DB_HOST="localhost"
+DB_PASSWORD="aerpace@123"
+DB_PORT=5432
+
+
+SECURITY_KEY="tilicho"
+
+
+# sample env name = development.env || production.env
