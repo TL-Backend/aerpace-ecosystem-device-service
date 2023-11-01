@@ -44,7 +44,7 @@ const createDeviceVersion = async ({
         success: false,
         message: errorResponses.NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        data: null,
+        data: {},
       };
     }
 
@@ -73,7 +73,7 @@ const createDeviceVersion = async ({
         success: false,
         message,
         errorCode: errorCode,
-        data: null,
+        data: {},
       };
     }
 
@@ -86,7 +86,7 @@ const createDeviceVersion = async ({
       success: false,
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
-      data: null,
+      data: {},
     };
   }
 };
@@ -173,7 +173,7 @@ exports.addDeviceActions = async ({
         success: false,
         message: errorResponses.IMPROPER_CATEGORY_OR_ACTIONS,
         errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
-        data: null,
+        data: {},
       };
     }
 
@@ -190,7 +190,7 @@ exports.addDeviceActions = async ({
       success: false,
       message: err.message,
       errorCode: errorResponses.INTERNAL_ERROR,
-      data: null,
+      data: {},
     };
   }
 };
@@ -214,7 +214,7 @@ const createDeviceVariant = async ({
         success: false,
         message: errorResponses.NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        data: null,
+        data: {},
       };
     }
 
@@ -241,7 +241,7 @@ const createDeviceVariant = async ({
         success: false,
         message,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        data: null,
+        data: {},
       };
     }
 
@@ -254,7 +254,7 @@ const createDeviceVariant = async ({
       success: false,
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
-      data: null,
+      data: {},
     };
   }
 };
@@ -272,7 +272,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
         success: false,
         message: errorResponses.NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        data: null,
+        data: {},
       };
     }
 
@@ -297,7 +297,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
         success: false,
         message,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        data: null,
+        data: {},
       };
     }
 
@@ -310,7 +310,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
       success: false,
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
-      data: null,
+      data: {},
     };
   }
 };
@@ -319,7 +319,7 @@ exports.addDeviceLevel = async (params) => {
   try {
     let device = {
       success: false,
-      data: null,
+      data: {},
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
     };
@@ -341,7 +341,7 @@ exports.addDeviceLevel = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.INVALID_MODEL,
-          data: null,
+          data: {},
         };
       }
 
@@ -354,7 +354,7 @@ exports.addDeviceLevel = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.INVALID_VARIANT,
-          data: null,
+          data: {},
         };
       }
 
@@ -378,7 +378,7 @@ exports.addDeviceLevel = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.INVALID_MODEL,
-          data: null,
+          data: {},
         };
       }
 
@@ -403,7 +403,7 @@ exports.addDeviceLevel = async (params) => {
     if (!device.success) {
       return {
         success: false,
-        data: null,
+        data: {},
         message: device.message,
         errorCode: device.errorCode,
       };
@@ -418,7 +418,7 @@ exports.addDeviceLevel = async (params) => {
     logger.error(err);
     return {
       success: false,
-      data: null,
+      data: {},
       message: errorResponses.INTERNAL_ERROR,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
     };
@@ -458,7 +458,7 @@ exports.getDeviceTypes = async () => {
       success: false,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
       message: err.message,
-      data: null,
+      data: {},
     };
   }
 };
@@ -489,7 +489,7 @@ exports.editDevicesHelper = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.UNABLE_TO_PERFORM_EDIT_OPERATION,
-          data: null,
+          data: {},
         };
       }
     }
@@ -509,7 +509,7 @@ exports.editDevicesHelper = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.UNABLE_TO_PERFORM_EDIT_OPERATION,
-          data: null,
+          data: {},
         };
       }
     }
@@ -527,7 +527,7 @@ exports.editDevicesHelper = async (params) => {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           message: errorResponses.UNABLE_TO_PERFORM_EDIT_OPERATION,
-          data: null,
+          data: {},
         };
       }
     }
@@ -558,7 +558,7 @@ exports.editDevicesHelper = async (params) => {
         success: false,
         message,
         errorCode: errorCode,
-        data: null,
+        data: {},
       };
     }
 
@@ -566,7 +566,7 @@ exports.editDevicesHelper = async (params) => {
     return {
       success: true,
       message: successResponses.DEVICES_EDITED_SUCCESSFULLY,
-      data: null,
+      data: {},
     };
   } catch (err) {
     await transaction.rollback();
@@ -575,7 +575,7 @@ exports.editDevicesHelper = async (params) => {
       success: false,
       message: err.message,
       errorCode: errorResponses.INTERNAL_ERROR,
-      data: null,
+      data: {},
     };
   }
 };
@@ -615,7 +615,7 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
       success: false,
       errorCode: statusCodes.STATUS_CODE_FAILURE,
       message: errorResponses.INTERNAL_ERROR,
-      data: null,
+      data: {},
     };
   }
 };
