@@ -1,4 +1,4 @@
-const { errorResponses } = require('./device.constant');
+const { errorResponses, deviceTypes } = require('./device.constant');
 const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
@@ -166,12 +166,8 @@ exports.validateAddAndEditCommonInputs = ({
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('status'));
     }
 
-    if (
-      !type ||
-      typeof type !== 'string' ||
-      !constants.DEVICE_TYPES.includes(type)
-    ) {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('type'));
+    if (!type || typeof type !== 'string' || type !== deviceTypes.CAR) {
+      errorsList.push(errorResponses.MISSING_INVALID_DEVICE_TYPE);
     }
 
     if (!privileges || typeof privileges !== 'object') {

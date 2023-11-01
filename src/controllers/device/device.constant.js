@@ -9,6 +9,10 @@ exports.successResponses = {
   ENTRIES_DELETED_SUCCESSFUL: 'Entries deleted successfully',
 };
 
+exports.deviceTypes = {
+  CAR: `CAR`,
+};
+
 exports.errorResponses = {
   INVALID_DEVICE_TYPE: (value) => {
     return `Invalid device type ${value}`;
@@ -22,6 +26,7 @@ exports.errorResponses = {
   INVALID_OBJECT_OR_MISSING_ERROR: (value) => {
     return `${value} should be present and it must be an object`;
   },
+  MISSING_INVALID_DEVICE_TYPE: `Missing or invalid device type.`,
   INVALID_MODEL_ID_TYPE: `Model id should be of type string and should start with m_ .`,
   INVALID_VARIANT_ID_TYPE: `Variant id should be of type string and should start with va_ .`,
   INTERNAL_ERROR: `Internal error.`,

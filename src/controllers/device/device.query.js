@@ -62,15 +62,16 @@ exports.getCategoriesQuery = `
 `;
 
 exports.verifyActionsById = `
-     WITH actions_to_check AS (
-       SELECT unnest(ARRAY [:actions]) AS action
-     )
-     SELECT CASE
-              WHEN COUNT(DISTINCT af.id) = (SELECT COUNT(*) FROM actions_to_check) THEN true
-              ELSE false
-          END AS result
-     FROM actions_to_check itc
-          LEFT JOIN ${dbTables.MASTER_ACTIONS_TABLE} as af ON itc.action = af.id;
+  WITH actions_to_check AS (
+    SELECT unnest(ARRAY [:actions]) AS action
+  )
+  SELECT CASE
+           WHEN COUNT(DISTINCT af.id) = (SELECT COUNT(*) FROM actions_to_check) THEN true
+           ELSE false
+       END AS result
+  FROM actions_to_check itc
+       LEFT JOIN aergov_device_master_actions as af ON itc.action = af.id
+  WHERE af.device_type = :type;
 `;
 
 exports.getValidActionsForVersion = `

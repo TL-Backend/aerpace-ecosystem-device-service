@@ -112,7 +112,7 @@ exports.addDeviceActions = async ({
       }
 
       const actionsCheck = await sequelize.query(verifyActionsById, {
-        replacements: { actions: privilege.actions },
+        replacements: { actions: privilege.actions, type },
       });
 
       if (!actionsCheck[0][0].result) {
@@ -263,7 +263,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
   const transaction = await sequelize.transaction();
   try {
     const validateModelName = await aergov_device_models.findAll({
-      where: { name },
+      where: { name, device_type: type },
     });
 
     if (validateModelName.length) {
