@@ -75,28 +75,33 @@ exports.verifyActionsById = `
 
 exports.getValidActionsForVersion = `
 SELECT ARRAY(
-     SELECT DISTINCT input_action_id
-     FROM unnest(ARRAY[:actions]) AS input_action_id
-     WHERE NOT EXISTS (
-         SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS} ada
-         WHERE ada.action_id = input_action_id
-         AND (ada.model_id = :model_id AND ada.variant_id = :variant_id AND ada.version_id IS NULL )
-     )
- );
+  SELECT DISTINCT input_action_id
+  FROM unnest(ARRAY[:actions]) AS input_action_id
+  WHERE NOT EXISTS (
+      SELECT 1
+      FROM ${dbTables.DEVICE_ACTIONS} ada
+      WHERE (
+          (ada.action_id = input_action_id)
+          AND (
+              (ada.model_id = :model_id AND ada.variant_id IS NULL AND ada.version_id IS NULL)
+              OR (ada.model_id = :model_id AND ada.variant_id = :variant_id AND ada.version_id IS NULL)
+          )
+      )
+  )
+);
 `;
 
 exports.getValidActionsForVariant = `
 SELECT ARRAY(
-     SELECT DISTINCT input_action_id
-     FROM unnest(ARRAY[:actions]) AS input_action_id
-     WHERE NOT EXISTS (
-         SELECT 1
-         FROM ${dbTables.DEVICE_ACTIONS} ada
-         WHERE ada.action_id = input_action_id
-         AND (ada.model_id = :model_id AND ada.variant_id IS NULL)
-     )
- );
+  SELECT DISTINCT input_action_id
+  FROM unnest(ARRAY[:actions]) AS input_action_id
+  WHERE NOT EXISTS (
+      SELECT 1
+      FROM ${dbTables.DEVICE_ACTIONS} ada
+      WHERE (ada.action_id = input_action_id)
+      AND (ada.model_id = :model_id AND ada.variant_id IS NULL)
+  )
+);
 `;
 
 exports.checkDeviceData = `
