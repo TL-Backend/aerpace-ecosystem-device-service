@@ -47,4 +47,5 @@ exports.errorResponses = {
 exports.status = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
+  DRAFT: `DRAFT`,
 };
