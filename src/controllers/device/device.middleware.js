@@ -158,14 +158,6 @@ exports.validateAddAndEditCommonInputs = ({
       errorsList.push(errorResponses.INVALID_VARIANT_ID_TYPE);
     }
 
-    if (
-      !status ||
-      typeof status !== 'string' ||
-      !constants.DEVICE_STATUS.includes(status)
-    ) {
-      errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('status'));
-    }
-
     if (!type || typeof type !== 'string' || type !== deviceTypes.CAR) {
       errorsList.push(errorResponses.MISSING_INVALID_DEVICE_TYPE);
     }

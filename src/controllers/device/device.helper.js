@@ -10,7 +10,11 @@ const {
   checkModelData,
 } = require('./device.query');
 const { statusCodes } = require('../../utils/statusCode');
-const { errorResponses, successResponses } = require('./device.constant');
+const {
+  errorResponses,
+  successResponses,
+  status,
+} = require('./device.constant');
 const {
   sequelize,
   Sequelize,
@@ -327,10 +331,12 @@ exports.addDeviceLevel = async (params) => {
       model_id: modelId,
       variant_id: variantId,
       name,
-      status,
       type,
       privileges,
     } = params;
+
+    const status = status.DRAFT;
+
     if (modelId && variantId) {
       const modelValidation = await aergov_device_models.findAll({
         where: { id: modelId },
