@@ -8,6 +8,9 @@ const {
   checkVariantData,
   getPersonalityPrivileges,
   checkModelData,
+  getVersionData,
+  getVariantData,
+  getModelData,
 } = require('./device.query');
 const { statusCodes } = require('../../utils/statusCode');
 const {
@@ -27,6 +30,7 @@ const {
 const { logger } = require('../../utils/logger');
 const { eachLimitPromise } = require('../../utils/utility');
 const { queries } = require('./device.query');
+const { levelStarting } = require('../../utils/constant');
 
 const createDeviceVersion = async ({
   modelId,
@@ -614,6 +618,67 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
           ? personalityData[0][0].personalities
           : [],
       },
+    };
+  } catch (err) {
+    logger.error(err.message);
+    return {
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      message: errorResponses.INTERNAL_ERROR,
+      data: {},
+    };
+  }
+};
+
+exports.getValidHierarchyHelper = async ({ id }) => {
+  try {
+    if (id.startsWith(levelStarting.VERSION)) {
+      const versionData = await sequelize.query(getVersionData, {
+        replacements: {
+          id,
+        },
+      });
+      if (versionData[0][0]) {
+        return {
+          success: true,
+          data: versionData[0][0],
+        };
+      }
+    } else if (id.startsWith(levelStarting.VARIANT)) {
+      const variantData = await sequelize.query(getVariantData, {
+        replacements: {
+          id,
+        },
+      });
+      if (variantData[0][0]) {
+        return {
+          success: true,
+          data: variantData[0][0],
+        };
+      }
+    } else if (id.startsWith(levelStarting.MODEL)) {
+      const modelData = await sequelize.query(getModelData, {
+        replacements: {
+          id,
+        },
+      });
+      if (modelData[0][0]) {
+        return {
+          success: true,
+          data: modelData[0][0],
+        };
+      }
+    }
+    return {
+      data: {
+        type: null,
+        model_name: null,
+        variant_name: null,
+        version_name: null,
+      },
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
+      message: errorResponses.NO_DATA_FOUND,
     };
   } catch (err) {
     logger.error(err.message);

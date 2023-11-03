@@ -8,6 +8,7 @@ const {
   getDevicesDataHelper,
   getPersonalityPrivilegesHelper,
   editDevicesHelper,
+  getValidHierarchyHelper,
 } = require('./device.helper');
 const messages = require('./device.constant');
 const { successResponses, errorResponses } = require('./device.constant');
@@ -147,6 +148,38 @@ exports.getPersonalityDetails = async (req, res, next) => {
       res,
       data,
       message: successResponses.COUNT_FETCH_SUCCESSFULL,
+      code: statusCodes.STATUS_CODE_SUCCESS,
+    });
+  } catch (err) {
+    logger.error(err);
+    return errorResponse({
+      req,
+      res,
+      code: statusCodes.STATUS_CODE_FAILURE,
+      error: errorResponses.INTERNAL_ERROR,
+    });
+  }
+};
+
+exports.getValidHierarchy = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { success, data, message, errorCode } = await getValidHierarchyHelper(
+      { id },
+    );
+    if (!success) {
+      return errorResponse({
+        req,
+        res,
+        data,
+        code: errorCode,
+        message: message,
+      });
+    }
+    return successResponse({
+      res,
+      data,
+      message: successResponses.DATA_FETCH_SUCCESSFULL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {

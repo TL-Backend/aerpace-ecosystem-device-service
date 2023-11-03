@@ -180,3 +180,39 @@ model_id = :model_id
 AND variant_id = :variant_id
 AND version_id = :version_id
 `;
+
+exports.getVersionData = `
+SELECT
+    adm.device_type AS type,
+    adm.name AS model_name,
+    adva.name AS variant_name,
+    adve.name AS version_name
+FROM
+    aergov_device_versions AS adve
+    LEFT JOIN aergov_device_models AS adm ON adm.id = adve.model_id
+    LEFT JOIN aergov_device_variants AS adva ON adva.id = adve.variant_id
+WHERE adve.id = :id
+`;
+
+exports.getVariantData = `
+SELECT
+    adm.device_type AS type,
+    adm.name AS model_name,
+    adva.name AS variant_name,
+    null AS version_name
+FROM
+    aergov_device_variants AS adva
+    LEFT JOIN aergov_device_models AS adm ON adm.id = adva.model_id
+WHERE adva.id = :id
+`;
+
+exports.getModelData = `
+SELECT
+    adm.device_type AS type,
+    adm.name AS model_name,
+    null AS variant_name,
+    null AS version_name
+FROM
+    aergov_device_models AS adm
+WHERE adm.id = :id
+`;
