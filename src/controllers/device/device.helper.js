@@ -335,7 +335,7 @@ exports.addDeviceLevel = async (params) => {
       privileges,
     } = params;
 
-    const status = status.DRAFT;
+    const deviceStatus = status.DRAFT;
 
     if (modelId && variantId) {
       const modelValidation = await aergov_device_models.findAll({
@@ -368,7 +368,7 @@ exports.addDeviceLevel = async (params) => {
         modelId,
         variantId,
         name,
-        status,
+        status: deviceStatus,
         type,
         privileges,
       });
@@ -391,7 +391,7 @@ exports.addDeviceLevel = async (params) => {
       device = await createDeviceVariant({
         modelId,
         name,
-        status,
+        status: deviceStatus,
         type,
         privileges,
       });
@@ -400,7 +400,7 @@ exports.addDeviceLevel = async (params) => {
     if (!modelId && !variantId) {
       device = await createDeviceModel({
         name,
-        status,
+        status: deviceStatus,
         type,
         privileges,
       });
