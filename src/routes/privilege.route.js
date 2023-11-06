@@ -16,7 +16,7 @@ module.exports = function (app) {
     addPersonalityPrivileges,
   );
   app.get(
-    '/privileges/devices',
+    '/privileges/devices/:id',
     listDevicePrivilegesValidation,
     getDeviceLevelPrivileges,
   );

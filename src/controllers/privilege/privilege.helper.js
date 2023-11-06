@@ -7,7 +7,7 @@ const {
   aergov_device_versions,
   aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { dbTables } = require('../../utils/constant');
+const { dbTables, levelStarting } = require('../../utils/constant');
 const {
   getPrivileges,
   getDeviceVariants,
@@ -16,7 +16,15 @@ const {
   getDevicePrivileges,
   validateActionIds,
   getActions,
+  versionDataQuery,
+  variantDataQuery,
+  modelDataQuery,
 } = require('./privilege.query');
+const {
+  getVersionData,
+  getVariantData,
+  getModelData,
+} = require('../device/device.query');
 
 exports.addPrivilegesToPersonality = async (params) => {
   try {
@@ -256,10 +264,44 @@ exports.getActionDetails = async ({
   }
 };
 
-exports.listDeviceLevelPrivileges = async ({ versionId }) => {
+exports.listDeviceLevelPrivileges = async ({ id }) => {
   try {
+    let data;
+    let modelId;
+    let variantId;
+    let versionId;
+    if (id.startsWith(levelStarting.VERSION)) {
+      data = await sequelize.query(versionDataQuery, {
+        replacements: {
+          id,
+        },
+      });
+      modelId = data[0][0] ? data[0][0].model_id : null;
+      variantId = data[0][0] ? data[0][0].variant_id : null;
+      versionId = data[0][0] ? data[0][0].id : null;
+    } else if (id.startsWith(levelStarting.VARIANT)) {
+      data = await sequelize.query(variantDataQuery, {
+        replacements: {
+          id,
+        },
+      });
+      modelId = data[0][0] ? data[0][0].model_id : null;
+      variantId = data[0][0] ? data[0][0].id : null;
+    } else if (id.startsWith(levelStarting.MODEL)) {
+      data = await sequelize.query(modelDataQuery, {
+        replacements: {
+          id,
+        },
+      });
+      modelId = data[0][0] ? data[0][0].id : null;
+    }
+
     const privilegesData = await sequelize.query(getDevicePrivileges, {
-      replacements: { version_id: versionId },
+      replacements: {
+        model_id: modelId ? modelId : null,
+        variant_id: variantId ? variantId : null,
+        version_id: versionId ? versionId : null,
+      },
       type: sequelize.QueryTypes.SELECT,
     });
     if (!privilegesData[0]) {
@@ -273,7 +315,7 @@ exports.listDeviceLevelPrivileges = async ({ versionId }) => {
     return {
       success: true,
       data: {
-        privileges: privilegesData[0].data,
+        privileges: privilegesData[0].result,
       },
       message: successResponses.DATA_FETCH_SUCCESSFUL,
     };
