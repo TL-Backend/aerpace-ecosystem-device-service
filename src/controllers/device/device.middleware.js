@@ -147,10 +147,6 @@ exports.validateAddAndEditCommonInputs = ({
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
 
-    if (variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_ID_MISSING);
-    }
-
     if (
       variantId &&
       (typeof variantId !== 'string' || !variantId.startsWith('va_'))
