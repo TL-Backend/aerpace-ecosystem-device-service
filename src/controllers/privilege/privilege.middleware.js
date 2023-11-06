@@ -89,30 +89,15 @@ exports.validateAddPersonalityPrivileges = async (req, res, next) => {
 
 exports.listDevicePrivilegesValidation = async (req, res, next) => {
   try {
-    const {
-      model_id: modelId,
-      variant_id: variantId,
-      version_id: versionId,
-    } = req.query;
+    const { id } = req.params;
     if (
-      modelId &&
-      (typeof modelId !== 'string' || !modelId.startsWith(levelStarting.MODEL))
+      id &&
+      (typeof id !== 'string' ||
+        (!id.startsWith(levelStarting.MODEL) &&
+          !id.startsWith(levelStarting.VARIANT) &&
+          !id.startsWith(levelStarting.VERSION)))
     ) {
-      throw errorResponses.INVALID_DEVICE_ID('MODEL');
-    }
-    if (
-      variantId &&
-      (typeof variantId !== 'string' ||
-        !variantId.startsWith(levelStarting.VARIANT))
-    ) {
-      throw errorResponses.INVALID_DEVICE_ID('VARIANT');
-    }
-    if (
-      versionId &&
-      (typeof versionId !== 'string' ||
-        !versionId.startsWith(levelStarting.VERSION))
-    ) {
-      throw errorResponses.INVALID_DEVICE_ID('VERSION');
+      throw errorResponses.INVALID_ID;
     }
     return next();
   } catch (err) {
