@@ -4,6 +4,7 @@ const {
   editDevices,
   getPersonalityDetails,
   createDeviceLevel,
+  getValidHierarchy,
 } = require('../controllers/device/device.controller');
 
 const {
@@ -23,4 +24,5 @@ module.exports = function (app) {
   app.get('/devices/:device_type', validateGetDevicesTypeInput, getDevicesList);
   app.post('/devices/device-level', validateDeviceInput, createDeviceLevel);
   app.patch('/devices', validateEditDeviceInput, editDevices);
+  app.get('/devices/device-level/:id', getValidHierarchy);
 };

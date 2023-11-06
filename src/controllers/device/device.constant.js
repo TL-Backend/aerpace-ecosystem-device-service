@@ -42,9 +42,11 @@ exports.errorResponses = {
   NO_VALID_ACTIONS_TO_UPDATE: `No valid actions to update.`,
   INVALID_VERSION_ID_TYPE: `Version id should be of type string and should start with ver_ .`,
   MODEL_OR_VARIANT_ID_MISSING: `Model Id or Variant Id is missing.`,
+  NO_DATA_FOUND: `Data not found with the given Id`,
 };
 
 exports.status = {
   ACTIVE: 'ACTIVE',
   INACTIVE: 'INACTIVE',
+  DRAFT: `DRAFT`,
 };

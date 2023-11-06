@@ -319,27 +319,11 @@ exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
     let filterCondition, joinCondition;
     if (type && modelId && variantId) {
       filterCondition = filterConditionQuery(modelId, variantId);
-      joinCondition = conditions.versionJoinCondition;
     } else if (type && modelId) {
-      joinCondition = conditions.variantJoinCondition;
       filterCondition = filterConditionQuery(modelId, variantId);
     } else if (type) {
       joinCondition = '';
       filterCondition = '';
-    }
-
-    const conditionStatus = await validateCondition({
-      checkCondition: joinCondition,
-      modelId,
-      variantId,
-    });
-    if (!conditionStatus) {
-      return {
-        success: false,
-        errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-        message: errorResponses.INVALID_MODEL_VARIANT_COMBINATION,
-        data: null,
-      };
     }
 
     const privilegesData = await getPrivilegesData({
