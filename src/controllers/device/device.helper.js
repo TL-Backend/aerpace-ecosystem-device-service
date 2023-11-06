@@ -343,19 +343,6 @@ exports.addDeviceLevel = async (params) => {
     const deviceStatus = status.DRAFT;
 
     if (!modelId && variantId) {
-      // const modelValidation = await aergov_device_models.findAll({
-      //   where: { id: modelId },
-      // });
-
-      // if (!modelValidation.length) {
-      //   return {
-      //     success: false,
-      //     errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
-      //     message: errorResponses.INVALID_MODEL,
-      //     data: {},
-      //   };
-      // }
-
       const variantValidation = await aergov_device_variants.findAll({
         where: { id: variantId },
       });

@@ -41,7 +41,7 @@ exports.errorResponses = {
   INVALID_TYPE: 'invalid device type',
   INVALID_MODEL_ID: 'invalid model id',
   INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
-  INVALID_ID: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT} or ${levelStarting.VERSION}`,
+  INVALID_INPUT_ID: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT} or ${levelStarting.VERSION}`,
 };
 
 exports.activityStatus = {

@@ -97,7 +97,7 @@ exports.listDevicePrivilegesValidation = async (req, res, next) => {
           !id.startsWith(levelStarting.VARIANT) &&
           !id.startsWith(levelStarting.VERSION)))
     ) {
-      throw errorResponses.INVALID_ID;
+      throw errorResponses.INVALID_INPUT_ID;
     }
     return next();
   } catch (err) {
