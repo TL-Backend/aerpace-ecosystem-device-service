@@ -31,6 +31,7 @@ const { logger } = require('../../utils/logger');
 const { eachLimitPromise } = require('../../utils/utility');
 const { queries } = require('./device.query');
 const { levelStarting } = require('../../utils/constant');
+const { Op } = require('sequelize');
 
 const createDeviceVersion = async ({
   modelId,
@@ -325,6 +326,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
 };
 
 exports.addDeviceLevel = async (params) => {
+  const transaction = await sequelize.transaction();
   try {
     let device = {
       success: false,
@@ -343,11 +345,11 @@ exports.addDeviceLevel = async (params) => {
     const deviceStatus = status.DRAFT;
 
     if (!modelId && variantId) {
-      const variantValidation = await aergov_device_variants.findAll({
+      const variantValidation = await aergov_device_variants.findOne({
         where: { id: variantId },
       });
 
-      if (!variantValidation.length) {
+      if (!variantValidation.dataValues) {
         return {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -355,23 +357,26 @@ exports.addDeviceLevel = async (params) => {
           data: {},
         };
       }
-      console.log(variantValidation[0].dataValues);
+
       device = await createDeviceVersion({
-        modelId: variantValidation[0].dataValues.model_id,
+        modelId: variantValidation.dataValues.model_id,
         variantId,
         name,
         status: deviceStatus,
         type,
         privileges,
       });
+
+      variantValidation.status = status.ACTIVE;
+      variantValidation.save();
     }
 
     if (modelId && !variantId) {
-      const modelValidation = await aergov_device_models.findAll({
+      const modelValidation = await aergov_device_models.findOne({
         where: { id: modelId },
       });
 
-      if (!modelValidation.length) {
+      if (!modelValidation.dataValues) {
         return {
           success: false,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
@@ -387,6 +392,9 @@ exports.addDeviceLevel = async (params) => {
         type,
         privileges,
       });
+
+      modelValidation.status = status.ACTIVE;
+      modelValidation.save();
     }
 
     if (!modelId && !variantId) {
@@ -406,6 +414,7 @@ exports.addDeviceLevel = async (params) => {
         errorCode: device.errorCode,
       };
     }
+    await transaction.commit();
     return {
       success: true,
       data: { id: device.id },
@@ -413,6 +422,7 @@ exports.addDeviceLevel = async (params) => {
       errorCode: statusCodes.STATUS_CODE_SUCCESS,
     };
   } catch (err) {
+    await transaction.rollback();
     logger.error(err);
     return {
       success: false,
@@ -481,8 +491,24 @@ exports.editDevicesHelper = async (params) => {
         },
       });
 
+      if (!versionData) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.INVALID_VERSION,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
       const validateVersionName = await aergov_device_versions.findAll({
-        where: { name, variant_id: versionData.dataValues.variant_id },
+        where: {
+          name,
+          variant_id: versionData.dataValues.variant_id,
+          id: {
+            [Op.ne]: versionId,
+          },
+        },
       });
 
       if (validateVersionName.length) {
@@ -494,9 +520,6 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
-      versionData.name = name;
-      await versionData.save();
 
       const validateVersions = await sequelize.query(checkDeviceData, {
         replacements: {
@@ -515,6 +538,8 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
+      versionData.name = name;
+      await versionData.save();
     }
 
     if (variantId && !modelId && !versionId) {
@@ -524,8 +549,24 @@ exports.editDevicesHelper = async (params) => {
         },
       });
 
+      if (!variantData) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.INVALID_VARIANT,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
       const validateVariantName = await aergov_device_variants.findAll({
-        where: { name, model_id: modelId },
+        where: {
+          name,
+          model_id: modelId,
+          id: {
+            [Op.ne]: variantId,
+          },
+        },
       });
 
       if (validateVariantName.length) {
@@ -537,9 +578,9 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
       variantData.name = name;
       await variantData.save();
+
       const validateDeviceVariant = await sequelize.query(checkVariantData, {
         replacements: {
           model_id: variantData.dataValues.model_id,
@@ -565,8 +606,24 @@ exports.editDevicesHelper = async (params) => {
         },
       });
 
+      if (!modelData) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.INVALID_MODEL,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
       const validateModelName = await aergov_device_models.findAll({
-        where: { name, device_type: type },
+        where: {
+          name,
+          device_type: type,
+          id: {
+            [Op.ne]: modelId,
+          },
+        },
       });
 
       if (validateModelName.length) {
@@ -578,9 +635,6 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
-      modelData.name = name;
-      await modelData.save();
 
       const validateDeviceVariant = await sequelize.query(checkModelData, {
         replacements: {
@@ -597,6 +651,9 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
+
+      modelData.name = name;
+      await modelData.save();
     }
 
     await aergov_device_actions.destroy(

@@ -19,14 +19,17 @@ const {
   versionDataQuery,
   variantDataQuery,
   modelDataQuery,
+  modelVariantVersionDataQuery,
 } = require('./privilege.query');
 const {
   getVersionData,
   getVariantData,
   getModelData,
 } = require('../device/device.query');
+const { status } = require('../device/device.constant');
 
 exports.addPrivilegesToPersonality = async (params) => {
+  const transaction = await sequelize.transaction();
   try {
     const {
       model_id: modelId,
@@ -41,6 +44,7 @@ exports.addPrivilegesToPersonality = async (params) => {
       message,
     } = this.groupPrivileges(privileges);
     if (!success) {
+      await transaction.rollback();
       return new HelperResponse({
         success: false,
         message,
@@ -60,6 +64,7 @@ exports.addPrivilegesToPersonality = async (params) => {
     });
 
     if (!validateSuccess) {
+      await transaction.rollback();
       return new HelperResponse({
         success: false,
         message: validateMessage,
@@ -150,6 +155,16 @@ exports.addPrivilegesToPersonality = async (params) => {
       await aergov_device_model_privileges.bulkCreate(personalities);
     }
 
+    let versionData = await aergov_device_versions.findOne({
+      where: {
+        id: versionId,
+      },
+    });
+
+    versionData.status = status.ACTIVE;
+    await versionData.save();
+
+    await transaction.commit();
     return new HelperResponse({
       success: true,
       message: successResponses.PRIVILEGES_ADDED,
@@ -161,6 +176,7 @@ exports.addPrivilegesToPersonality = async (params) => {
       },
     });
   } catch (err) {
+    await transaction.rollback();
     logger.error(err);
     return new HelperResponse({ success: false, message: err.message });
   }
@@ -270,31 +286,18 @@ exports.listDeviceLevelPrivileges = async ({ id }) => {
     let modelId;
     let variantId;
     let versionId;
-    if (id.startsWith(levelStarting.VERSION)) {
-      data = await sequelize.query(versionDataQuery, {
+
+    const modelVariantVersionData = await sequelize.query(
+      modelVariantVersionDataQuery,
+      {
         replacements: {
           id,
         },
-      });
-      modelId = data[0][0] ? data[0][0].model_id : null;
-      variantId = data[0][0] ? data[0][0].variant_id : null;
-      versionId = data[0][0] ? data[0][0].id : null;
-    } else if (id.startsWith(levelStarting.VARIANT)) {
-      data = await sequelize.query(variantDataQuery, {
-        replacements: {
-          id,
-        },
-      });
-      modelId = data[0][0] ? data[0][0].model_id : null;
-      variantId = data[0][0] ? data[0][0].id : null;
-    } else if (id.startsWith(levelStarting.MODEL)) {
-      data = await sequelize.query(modelDataQuery, {
-        replacements: {
-          id,
-        },
-      });
-      modelId = data[0][0] ? data[0][0].id : null;
-    }
+      },
+    );
+    modelId = modelVariantVersionData[0][0].model_id;
+    variantId = modelVariantVersionData[0][0].variant_id;
+    versionId = modelVariantVersionData[0][0].version_id;
 
     const privilegesData = await sequelize.query(getDevicePrivileges, {
       replacements: {

@@ -87,6 +87,10 @@ exports.validateEditDeviceInput = async (req, res, next) => {
     } = req.body;
     let errorsList = [];
 
+    if (!modelId && !variantId && !versionId) {
+      errorsList.push(errorResponses.NO_DEVICE_INPUT);
+    }
+
     if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }

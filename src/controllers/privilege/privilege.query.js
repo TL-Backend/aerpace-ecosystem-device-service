@@ -200,3 +200,29 @@ exports.validateActionIds = `
 exports.modelDataQuery = `SELECT * from ${dbTables.DEVICE_MODELS_TABLE} WHERE id = :id`;
 exports.variantDataQuery = `SELECT * from ${dbTables.DEVICE_VARIANT_TABLE} WHERE id = :id`;
 exports.versionDataQuery = `SELECT * from ${dbTables.DEVICE_VERSION_TABLE} WHERE id = :id`;
+
+exports.modelVariantVersionDataQuery = `
+SELECT
+    'VERSION' AS level,
+    model_id AS model_id,
+    variant_id AS variant_id,
+    id AS version_id
+FROM aergov_device_versions
+WHERE id = :id
+UNION ALL
+SELECT
+    'VARIANT' AS level,
+    model_id AS model_id,
+    id AS variant_id,
+    NULL AS version_id
+FROM aergov_device_variants
+WHERE id = :id
+UNION ALL
+SELECT
+    'MODEL' AS level,
+    id AS model_id,
+    NULL AS variant_id,
+    NULL AS version_id
+FROM aergov_device_models
+WHERE id = :id
+`;

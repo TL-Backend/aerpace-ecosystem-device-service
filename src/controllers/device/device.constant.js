@@ -36,13 +36,15 @@ exports.errorResponses = {
   IMPROPER_CATEGORY_OR_ACTIONS: `Please enter proper category id or proper actions.`,
   INVALID_MODEL: `Invalid model id.`,
   INVALID_VARIANT: `Invalid variant id.`,
+  INVALID_VERSION: `Invalid version id.`,
   UNABLE_TO_PERFORM_EDIT_OPERATION:
-    'Unable to perform edit operation for device details',
+    'Unable to perform edit operation on privileges for device details',
   MODEL_ID_MISSING: `Model Id must be passed.`,
   NO_VALID_ACTIONS_TO_UPDATE: `No valid actions to update.`,
   INVALID_VERSION_ID_TYPE: `Version id should be of type string and should start with ver_ .`,
   MODEL_OR_VARIANT_ID_MISSING: `Model Id or Variant Id is missing.`,
   NO_DATA_FOUND: `Data not found with the given Id`,
+  NO_DEVICE_INPUT: `Either model_id or variant_id or version_id must be given `,
 };
 
 exports.status = {
