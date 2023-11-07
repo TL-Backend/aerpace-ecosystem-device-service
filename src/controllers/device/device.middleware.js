@@ -87,7 +87,7 @@ exports.validateEditDeviceInput = async (req, res, next) => {
     } = req.body;
     let errorsList = [];
 
-    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }
 
@@ -105,10 +105,6 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       throw error;
     }
     errorsList = errorList;
-
-    if (versionId && !variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_OR_VARIANT_ID_MISSING);
-    }
 
     if (
       versionId &&

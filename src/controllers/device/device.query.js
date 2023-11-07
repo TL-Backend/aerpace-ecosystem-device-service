@@ -186,7 +186,8 @@ SELECT
     adm.device_type AS type,
     adm.name AS model_name,
     adva.name AS variant_name,
-    adve.name AS version_name
+    adve.name AS version_name,
+    adve.status AS status
 FROM
     aergov_device_versions AS adve
     LEFT JOIN aergov_device_models AS adm ON adm.id = adve.model_id
@@ -199,7 +200,8 @@ SELECT
     adm.device_type AS type,
     adm.name AS model_name,
     adva.name AS variant_name,
-    null AS version_name
+    null AS version_name,
+    adva.status AS status
 FROM
     aergov_device_variants AS adva
     LEFT JOIN aergov_device_models AS adm ON adm.id = adva.model_id
@@ -211,7 +213,8 @@ SELECT
     adm.device_type AS type,
     adm.name AS model_name,
     null AS variant_name,
-    null AS version_name
+    null AS version_name,
+    adm.status AS status
 FROM
     aergov_device_models AS adm
 WHERE adm.id = :id

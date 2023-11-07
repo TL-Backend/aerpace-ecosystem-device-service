@@ -470,13 +470,36 @@ exports.editDevicesHelper = async (params) => {
       version_id: versionId = null,
       privileges,
       type,
+      name,
     } = params;
+    let versionData, variantData, modelData;
 
-    if (modelId && variantId && versionId) {
+    if (versionId && !modelId && !variantId) {
+      versionData = await aergov_device_versions.findAll({
+        where: {
+          id: versionId,
+        },
+      });
+
+      const validateVersionName = await aergov_device_versions.findAll({
+        where: { name, variant_id: versionData[0].dataValues.variant_id },
+      });
+      if (validateVersionName.length) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.NAME_EXISTS,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
+      versionData.name = name;
+      await versionData.save();
       const validateVersions = await sequelize.query(checkDeviceData, {
         replacements: {
-          model_id: modelId,
-          variant_id: variantId,
+          model_id: versionData[0].dataValues.model_id,
+          variant_id: versionData[0].dataValues.variant_id,
           version_id: versionId,
         },
         type: sequelize.QueryTypes.SELECT,
@@ -492,12 +515,18 @@ exports.editDevicesHelper = async (params) => {
       }
     }
 
-    if (modelId && variantId && !versionId) {
+    if (variantId && !modelId && !versionId) {
+      // variantData = await aergov_device_variants.findAll({
+      //   where: {
+      //     id: variantId
+      //   }
+      // })
+      // variantData.name = name
+      // await variantData.save()
       const validateDeviceVariant = await sequelize.query(checkVariantData, {
         replacements: {
-          model_id: modelId,
+          model_id: variantData[0].dataValues.model_id,
           variant_id: variantId,
-          version_id: versionId,
         },
         type: sequelize.QueryTypes.SELECT,
       });
@@ -513,6 +542,13 @@ exports.editDevicesHelper = async (params) => {
     }
 
     if (modelId && !variantId && !versionId) {
+      modelData = await aergov_device_models.findAll({
+        where: {
+          id: modelId,
+        },
+      });
+      modelData.name = name;
+      await modelData.save();
       const validateDeviceVariant = await sequelize.query(checkModelData, {
         replacements: {
           model_id: modelId,
