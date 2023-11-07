@@ -475,15 +475,16 @@ exports.editDevicesHelper = async (params) => {
     let versionData, variantData, modelData;
 
     if (versionId && !modelId && !variantId) {
-      versionData = await aergov_device_versions.findAll({
+      versionData = await aergov_device_versions.findOne({
         where: {
           id: versionId,
         },
       });
 
       const validateVersionName = await aergov_device_versions.findAll({
-        where: { name, variant_id: versionData[0].dataValues.variant_id },
+        where: { name, variant_id: versionData.dataValues.variant_id },
       });
+
       if (validateVersionName.length) {
         await transaction.rollback();
         return {
@@ -496,10 +497,11 @@ exports.editDevicesHelper = async (params) => {
 
       versionData.name = name;
       await versionData.save();
+
       const validateVersions = await sequelize.query(checkDeviceData, {
         replacements: {
-          model_id: versionData[0].dataValues.model_id,
-          variant_id: versionData[0].dataValues.variant_id,
+          model_id: versionData.dataValues.model_id,
+          variant_id: versionData.dataValues.variant_id,
           version_id: versionId,
         },
         type: sequelize.QueryTypes.SELECT,
@@ -516,16 +518,31 @@ exports.editDevicesHelper = async (params) => {
     }
 
     if (variantId && !modelId && !versionId) {
-      // variantData = await aergov_device_variants.findAll({
-      //   where: {
-      //     id: variantId
-      //   }
-      // })
-      // variantData.name = name
-      // await variantData.save()
+      variantData = await aergov_device_variants.findOne({
+        where: {
+          id: variantId,
+        },
+      });
+
+      const validateVariantName = await aergov_device_variants.findAll({
+        where: { name, model_id: modelId },
+      });
+
+      if (validateVariantName.length) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.NAME_EXISTS,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
+      variantData.name = name;
+      await variantData.save();
       const validateDeviceVariant = await sequelize.query(checkVariantData, {
         replacements: {
-          model_id: variantData[0].dataValues.model_id,
+          model_id: variantData.dataValues.model_id,
           variant_id: variantId,
         },
         type: sequelize.QueryTypes.SELECT,
@@ -542,13 +559,29 @@ exports.editDevicesHelper = async (params) => {
     }
 
     if (modelId && !variantId && !versionId) {
-      modelData = await aergov_device_models.findAll({
+      modelData = await aergov_device_models.findOne({
         where: {
           id: modelId,
         },
       });
+
+      const validateModelName = await aergov_device_models.findAll({
+        where: { name, device_type: type },
+      });
+
+      if (validateModelName.length) {
+        await transaction.rollback();
+        return {
+          success: false,
+          message: errorResponses.NAME_EXISTS,
+          errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
+          data: {},
+        };
+      }
+
       modelData.name = name;
       await modelData.save();
+
       const validateDeviceVariant = await sequelize.query(checkModelData, {
         replacements: {
           model_id: modelId,
