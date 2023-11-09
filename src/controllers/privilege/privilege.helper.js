@@ -282,7 +282,6 @@ exports.getActionDetails = async ({
 
 exports.listDeviceLevelPrivileges = async ({ id }) => {
   try {
-    let data;
     let modelId;
     let variantId;
     let versionId;
@@ -295,6 +294,14 @@ exports.listDeviceLevelPrivileges = async ({ id }) => {
         },
       },
     );
+    if (!modelVariantVersionData[0][0]) {
+      return {
+        success: false,
+        errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
+        message: errorResponses.LEVEL_ID_NOT_FOUND,
+        data: null,
+      };
+    }
     modelId = modelVariantVersionData[0][0].model_id;
     variantId = modelVariantVersionData[0][0].variant_id;
     versionId = modelVariantVersionData[0][0].version_id;
@@ -311,7 +318,7 @@ exports.listDeviceLevelPrivileges = async ({ id }) => {
       return {
         success: false,
         errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
-        message: errorResponses.INVALID_VERSION,
+        message: errorResponses.LEVEL_ID_NOT_FOUND,
         data: null,
       };
     }
