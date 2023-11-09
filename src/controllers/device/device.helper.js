@@ -789,6 +789,7 @@ exports.getValidHierarchyHelper = async ({ id }) => {
         model_name: null,
         variant_name: null,
         version_name: null,
+        status: null,
       },
       success: false,
       errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
