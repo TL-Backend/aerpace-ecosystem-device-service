@@ -13,6 +13,10 @@ const {
   validateDeviceInput,
   validateEditDeviceInput,
 } = require('../controllers/device/device.middleware');
+const { execute } = require('../controllers/executor/executor');
+const {
+  executorInputValidator,
+} = require('../controllers/executor/executor.middleware');
 
 module.exports = function (app) {
   app.get('/devices/types', listDevicesTypes);
@@ -25,4 +29,5 @@ module.exports = function (app) {
   app.post('/devices/device-level', validateDeviceInput, createDeviceLevel);
   app.patch('/devices', validateEditDeviceInput, editDevices);
   app.get('/devices/device-level/:id', getValidHierarchy);
+  app.post('/devices/execute', executorInputValidator, execute);
 };

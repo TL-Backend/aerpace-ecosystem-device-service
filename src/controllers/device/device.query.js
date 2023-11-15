@@ -57,7 +57,7 @@ exports.queries = {
 
 exports.getCategoriesQuery = `
      SELECT id, category_name, category_identifier, device_type
-     FROM ${dbTables.ACTION_CATEGORIES_TABLE} AS aac 
+     FROM ${dbTables.ACTION_CATEGORIES} AS aac 
           WHERE aac.id = :id
 `;
 
