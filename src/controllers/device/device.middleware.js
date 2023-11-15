@@ -87,7 +87,11 @@ exports.validateEditDeviceInput = async (req, res, next) => {
     } = req.body;
     let errorsList = [];
 
-    if (!modelId || typeof modelId !== 'string' || !modelId.startsWith('m_')) {
+    if (!modelId && !variantId && !versionId) {
+      errorsList.push(errorResponses.NO_DEVICE_INPUT);
+    }
+
+    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
       errorsList.push(errorResponses.INVALID_MODEL_ID_TYPE);
     }
 
@@ -105,10 +109,6 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       throw error;
     }
     errorsList = errorList;
-
-    if (versionId && !variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_OR_VARIANT_ID_MISSING);
-    }
 
     if (
       versionId &&
@@ -145,10 +145,6 @@ exports.validateAddAndEditCommonInputs = ({
   try {
     if (name && typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
-    }
-
-    if (variantId && !modelId) {
-      errorsList.push(errorResponses.MODEL_ID_MISSING);
     }
 
     if (

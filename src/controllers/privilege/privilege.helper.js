@@ -7,7 +7,7 @@ const {
   aergov_device_versions,
   aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { dbTables } = require('../../utils/constant');
+const { dbTables, levelStarting } = require('../../utils/constant');
 const {
   getPrivileges,
   getDeviceVariants,
@@ -16,9 +16,20 @@ const {
   getDevicePrivileges,
   validateActionIds,
   getActions,
+  versionDataQuery,
+  variantDataQuery,
+  modelDataQuery,
+  modelVariantVersionDataQuery,
 } = require('./privilege.query');
+const {
+  getVersionData,
+  getVariantData,
+  getModelData,
+} = require('../device/device.query');
+const { status } = require('../device/device.constant');
 
 exports.addPrivilegesToPersonality = async (params) => {
+  const transaction = await sequelize.transaction();
   try {
     const {
       model_id: modelId,
@@ -33,6 +44,7 @@ exports.addPrivilegesToPersonality = async (params) => {
       message,
     } = this.groupPrivileges(privileges);
     if (!success) {
+      await transaction.rollback();
       return new HelperResponse({
         success: false,
         message,
@@ -52,6 +64,7 @@ exports.addPrivilegesToPersonality = async (params) => {
     });
 
     if (!validateSuccess) {
+      await transaction.rollback();
       return new HelperResponse({
         success: false,
         message: validateMessage,
@@ -142,6 +155,16 @@ exports.addPrivilegesToPersonality = async (params) => {
       await aergov_device_model_privileges.bulkCreate(personalities);
     }
 
+    let versionData = await aergov_device_versions.findOne({
+      where: {
+        id: versionId,
+      },
+    });
+
+    versionData.status = status.ACTIVE;
+    await versionData.save();
+
+    await transaction.commit();
     return new HelperResponse({
       success: true,
       message: successResponses.PRIVILEGES_ADDED,
@@ -153,6 +176,7 @@ exports.addPrivilegesToPersonality = async (params) => {
       },
     });
   } catch (err) {
+    await transaction.rollback();
     logger.error(err);
     return new HelperResponse({ success: false, message: err.message });
   }
@@ -256,24 +280,52 @@ exports.getActionDetails = async ({
   }
 };
 
-exports.listDeviceLevelPrivileges = async ({ versionId }) => {
+exports.listDeviceLevelPrivileges = async ({ id }) => {
   try {
+    let modelId;
+    let variantId;
+    let versionId;
+
+    const modelVariantVersionData = await sequelize.query(
+      modelVariantVersionDataQuery,
+      {
+        replacements: {
+          id,
+        },
+      },
+    );
+    if (!modelVariantVersionData[0][0]) {
+      return {
+        success: false,
+        errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
+        message: errorResponses.LEVEL_ID_NOT_FOUND,
+        data: null,
+      };
+    }
+    modelId = modelVariantVersionData[0][0].model_id;
+    variantId = modelVariantVersionData[0][0].variant_id;
+    versionId = modelVariantVersionData[0][0].version_id;
+
     const privilegesData = await sequelize.query(getDevicePrivileges, {
-      replacements: { version_id: versionId },
+      replacements: {
+        model_id: modelId ? modelId : null,
+        variant_id: variantId ? variantId : null,
+        version_id: versionId ? versionId : null,
+      },
       type: sequelize.QueryTypes.SELECT,
     });
     if (!privilegesData[0]) {
       return {
         success: false,
         errorCode: statusCodes.STATUS_CODE_DATA_NOT_FOUND,
-        message: errorResponses.INVALID_VERSION,
+        message: errorResponses.LEVEL_ID_NOT_FOUND,
         data: null,
       };
     }
     return {
       success: true,
       data: {
-        privileges: privilegesData[0].data,
+        privileges: privilegesData[0].result,
       },
       message: successResponses.DATA_FETCH_SUCCESSFUL,
     };

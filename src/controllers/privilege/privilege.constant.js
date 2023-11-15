@@ -34,6 +34,7 @@ exports.errorResponses = {
   INVALID_ACTION_ID: `Improper list of action id's were given.`,
   PERSONALITY_ALREADY_EXISTS: `The given personality already exists, please try updating them. `,
   INVALID_VERSION: 'invalid version id',
+  LEVEL_ID_NOT_FOUND: 'Invalid id or data not found',
   INVALID_DEVICE_ID: (value) => {
     return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
   },
@@ -41,6 +42,7 @@ exports.errorResponses = {
   INVALID_TYPE: 'invalid device type',
   INVALID_MODEL_ID: 'invalid model id',
   INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
+  INVALID_INPUT_ID: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT} or ${levelStarting.VERSION}`,
 };
 
 exports.activityStatus = {

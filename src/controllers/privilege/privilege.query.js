@@ -3,67 +3,90 @@ const { activityStatus } = require('./privilege.constant');
 
 exports.getDevicePrivileges = `
 SELECT
-    adve.model_id,
-    adve.variant_id,
-    adve.id AS version_id,
-    CASE
-        WHEN adve.model_id IS NOT NULL
-        AND adve.variant_id IS NOT NULL THEN (
-            SELECT
+    json_build_object(
+        'model',
+        COALESCE(
+            json_agg(
                 json_build_object(
-                    'model',
-                    COALESCE(json_agg(
-                      json_build_object('action_id', action_id, 'action_name', adma.action_name, 'category_id',aac.id, 'category_name', aac.category_name)
-                  ) FILTER (
-                      WHERE
-                          model_id IS NOT NULL  
-                          AND variant_id IS NULL
-                          AND version_id IS NULL
-                  ),'[]'),
-                    'variant',
-                   COALESCE( json_agg(
-                    json_build_object('action_id', action_id,'action_name', adma.action_name, 'category_id',aac.id, 'category_name', aac.category_name)
-                ) FILTER (
-                    WHERE
-                        model_id = adve.model_id
-                        AND variant_id = adve.variant_id
-                        AND version_id IS NULL
-                ),'[]'),
-                    'version',
-                   COALESCE( json_agg(
-                    json_build_object('action_id', action_id, 'action_name', adma.action_name,'category_id',aac.id, 'category_name', aac.category_name)
-                ) FILTER (
-                    WHERE
-                        model_id = adve.model_id
-                        AND variant_id = adve.variant_id
-                        AND version_id = adve.id
-                ),'[]')
-                ) AS result
-            FROM
-                ${dbTables.DEVICE_ACTIONS} AS ada
-                LEFT JOIN ${dbTables.DEVICE_MASTER_ACTIONS} AS adma ON adma.id = ada.action_id
-                LEFT JOIN ${dbTables.DEVICE_ACTION_CATEGORIES} AS aac ON aac.id = ada.category_id
-            WHERE (
-                    model_id = adve.model_id
+                    'action_id',
+                    action_id,
+                    'action_name',
+                    adma.action_name,
+                    'category_id',
+                    aac.id,
+                    'category_name',
+                    aac.category_name
+                )
+            ) FILTER (
+                WHERE
+                    model_id = ada.model_id
                     AND variant_id IS NULL
                     AND version_id IS NULL
+            ),
+            '[]'
+        ),
+        'variant',
+        COALESCE(
+            json_agg(
+                json_build_object(
+                    'action_id',
+                    action_id,
+                    'action_name',
+                    adma.action_name,
+                    'category_id',
+                    aac.id,
+                    'category_name',
+                    aac.category_name
                 )
-                OR (
-                    model_id = adve.model_id
-                    AND variant_id = adve.variant_id
+            ) FILTER (
+                WHERE
+                    model_id = ada.model_id
+                    AND variant_id = ada.variant_id
                     AND version_id IS NULL
+            ),
+            '[]'
+        ),
+        'version',
+        COALESCE(
+            json_agg(
+                json_build_object(
+                    'action_id',
+                    action_id,
+                    'action_name',
+                    adma.action_name,
+                    'category_id',
+                    aac.id,
+                    'category_name',
+                    aac.category_name
                 )
-                OR (
-                    model_id = adve.model_id
-                    AND variant_id = adve.variant_id
-                    AND version_id = adve.id
-                )
+            ) FILTER (
+                WHERE
+                    model_id = ada.model_id
+                    AND variant_id = ada.variant_id
+                    AND version_id = ada.version_id
+            ),
+            '[]'
         )
-        ELSE '{}'
-    END AS data
+    ) AS result
 FROM
-    ${dbTables.DEVICE_VERSION_TABLE} AS adve
-WHERE adve.id = :version_id AND adve.status = '${activityStatus.ACTIVE}';
+    aergov_device_actions AS ada
+    LEFT JOIN aergov_device_master_actions AS adma ON adma.id = ada.action_id
+    LEFT JOIN aergov_action_categories AS aac ON aac.id = ada.category_id -- WHERE
+WHERE (
+        ada.model_id = :model_id
+        AND ada.variant_id IS NULL
+        AND ada.version_id IS NULL
+    )
+    OR (
+        ada.model_id = :model_id
+        AND ada.variant_id = :variant_id
+        AND ada.version_id IS NULL
+    )
+    OR (
+        ada.model_id = :model_id
+        AND ada.variant_id = :variant_id
+        AND ada.version_id = :version_id
+    )
 `;
 
 exports.getPrivileges = `
@@ -172,4 +195,34 @@ exports.validateActionIds = `
     )
     SELECT master_count = ARRAY_LENGTH(ARRAY [:actions], 1) AND master_count = actions_count AS result
     FROM master_actions_count, actions_count;
+`;
+
+exports.modelDataQuery = `SELECT * from ${dbTables.DEVICE_MODELS_TABLE} WHERE id = :id`;
+exports.variantDataQuery = `SELECT * from ${dbTables.DEVICE_VARIANT_TABLE} WHERE id = :id`;
+exports.versionDataQuery = `SELECT * from ${dbTables.DEVICE_VERSION_TABLE} WHERE id = :id`;
+
+exports.modelVariantVersionDataQuery = `
+SELECT
+    'VERSION' AS level,
+    model_id AS model_id,
+    variant_id AS variant_id,
+    id AS version_id
+FROM aergov_device_versions
+WHERE id = :id
+UNION ALL
+SELECT
+    'VARIANT' AS level,
+    model_id AS model_id,
+    id AS variant_id,
+    NULL AS version_id
+FROM aergov_device_variants
+WHERE id = :id
+UNION ALL
+SELECT
+    'MODEL' AS level,
+    id AS model_id,
+    NULL AS variant_id,
+    NULL AS version_id
+FROM aergov_device_models
+WHERE id = :id
 `;

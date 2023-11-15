@@ -43,9 +43,9 @@ exports.addPersonalityPrivileges = async (req, res, next) => {
 
 exports.getDeviceLevelPrivileges = async (req, res, next) => {
   try {
-    const { version_id: versionId } = req.query;
+    const { id } = req.params;
     let { success, errorCode, message, data } = await listDeviceLevelPrivileges(
-      { versionId },
+      { id },
     );
     if (!success) {
       return errorResponse({
