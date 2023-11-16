@@ -197,10 +197,6 @@ exports.validateActionIds = `
     FROM master_actions_count, actions_count;
 `;
 
-exports.modelDataQuery = `SELECT * from ${dbTables.DEVICE_MODELS_TABLE} WHERE id = :id`;
-exports.variantDataQuery = `SELECT * from ${dbTables.DEVICE_VARIANT_TABLE} WHERE id = :id`;
-exports.versionDataQuery = `SELECT * from ${dbTables.DEVICE_VERSION_TABLE} WHERE id = :id`;
-
 exports.modelVariantVersionDataQuery = `
 SELECT
     'VERSION' AS level,
