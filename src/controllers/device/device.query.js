@@ -24,6 +24,7 @@ exports.getAllDevicesFromType = `SELECT
                                                     'name', dvv.name,
                                                     'status', dvv.status
                                                 )
+                                                ORDER BY dvv.updated_at DESC
                                             ) 
                                             FROM aergov_device_versions AS dvv
                                             WHERE dvv.variant_id = dv.id
@@ -31,6 +32,7 @@ exports.getAllDevicesFromType = `SELECT
                                         '[]'
                                     )
                                 )
+                                ORDER BY dv.updated_at DESC
                             ) 
                             FROM aergov_device_variants AS dv
                             WHERE dv.model_id = dm.id
@@ -39,6 +41,7 @@ exports.getAllDevicesFromType = `SELECT
                     )
                 )
             )
+            ORDER BY dm.updated_at DESC
         ),
         '[]'
     ) AS data
