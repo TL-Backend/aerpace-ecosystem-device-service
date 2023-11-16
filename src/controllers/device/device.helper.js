@@ -770,6 +770,7 @@ exports.getValidHierarchyHelper = async ({ id }) => {
           data: variantData[0][0],
         };
       }
+      console.log(variantData);
     } else if (id.startsWith(levelStarting.MODEL)) {
       const modelData = await sequelize.query(getModelData, {
         replacements: {
@@ -782,6 +783,7 @@ exports.getValidHierarchyHelper = async ({ id }) => {
           data: modelData[0][0],
         };
       }
+      console.log(modelData);
     }
     return {
       data: {

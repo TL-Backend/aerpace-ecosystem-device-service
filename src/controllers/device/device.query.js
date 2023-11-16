@@ -188,8 +188,11 @@ exports.getVersionData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     adva.name AS variant_name,
+    adva.id AS variant_id,
     adve.name AS version_name,
+    adve.id AS version_id,
     adve.status AS status
 FROM
     aergov_device_versions AS adve
@@ -202,8 +205,11 @@ exports.getVariantData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     adva.name AS variant_name,
+    adva.id AS variant_id,
     null AS version_name,
+    null AS version_id
     adva.status AS status
 FROM
     aergov_device_variants AS adva
@@ -215,8 +221,11 @@ exports.getModelData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     null AS variant_name,
+    null AS variant_id,
     null AS version_name,
+    null AS version_id
     adm.status AS status
 FROM
     aergov_device_models AS adm
