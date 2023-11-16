@@ -38,6 +38,7 @@ exports.errorResponses = {
   INVALID_DEVICE_ID: (value) => {
     return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
   },
+  INVALID_ID_TYPE: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT}`,
   INVALID_MODEL_VARIANT_COMBINATION: 'invalid model or variant id',
   INVALID_TYPE: 'invalid device type',
   INVALID_MODEL_ID: 'invalid model id',

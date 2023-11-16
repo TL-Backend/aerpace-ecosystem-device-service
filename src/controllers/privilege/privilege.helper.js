@@ -377,17 +377,24 @@ const getPrivilegesData = async ({ queryCondition, type }) => {
 exports.listMasterPrivileges = async ({ type, id }) => {
   try {
     type = type.trim();
-    const { success, errorCode, message, data } =
-      await this.getModelVariantVersionDetails({ id });
-    if (!success) {
-      return {
-        success: false,
-        errorCode,
-        message,
-        data: null,
-      };
+    let modelVariantVersionData = {
+      modelId: null,
+      variantId: null,
+    };
+    if (id) {
+      const { success, errorCode, message, data } =
+        await this.getModelVariantVersionDetails({ id });
+      if (!success) {
+        return {
+          success: false,
+          errorCode,
+          message,
+          data: null,
+        };
+      }
+      modelVariantVersionData = data;
     }
-    const { modelId, variantId } = data;
+    const { modelId, variantId } = modelVariantVersionData;
 
     let filterCondition;
     if (type && modelId && variantId) {
