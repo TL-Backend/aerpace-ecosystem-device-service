@@ -26,7 +26,7 @@ exports.getAllDevicesFromType = `SELECT
                                                 )
                                                 ORDER BY dvv.updated_at DESC
                                             ) 
-                                            FROM aergov_device_versions AS dvv
+                                            FROM ${dbTables.DEVICE_VERSION_TABLE} AS dvv
                                             WHERE dvv.variant_id = dv.id
                                         ),
                                         '[]'
@@ -34,7 +34,7 @@ exports.getAllDevicesFromType = `SELECT
                                 )
                                 ORDER BY dv.updated_at DESC
                             ) 
-                            FROM aergov_device_variants AS dv
+                            FROM ${dbTables.DEVICE_VARIANT_TABLE} AS dv
                             WHERE dv.model_id = dm.id
                         ),
                         '[]'
@@ -195,9 +195,9 @@ SELECT
     adve.id AS version_id,
     adve.status AS status
 FROM
-    aergov_device_versions AS adve
-    LEFT JOIN aergov_device_models AS adm ON adm.id = adve.model_id
-    LEFT JOIN aergov_device_variants AS adva ON adva.id = adve.variant_id
+    ${dbTables.DEVICE_VERSION_TABLE} AS adve
+    LEFT JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adm.id = adve.model_id
+    LEFT JOIN ${dbTables.DEVICE_VARIANT_TABLE} AS adva ON adva.id = adve.variant_id
 WHERE adve.id = :id
 `;
 
@@ -212,8 +212,8 @@ SELECT
     null AS version_id,
     adva.status AS status
 FROM
-    aergov_device_variants AS adva
-    LEFT JOIN aergov_device_models AS adm ON adm.id = adva.model_id
+    ${dbTables.DEVICE_VARIANT_TABLE} AS adva
+    LEFT JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adm.id = adva.model_id
 WHERE adva.id = :id
 `;
 
@@ -228,6 +228,6 @@ SELECT
     null AS version_id,
     adm.status AS status
 FROM
-    aergov_device_models AS adm
+  ${dbTables.DEVICE_MODELS_TABLE} AS adm
 WHERE adm.id = :id
 `;
