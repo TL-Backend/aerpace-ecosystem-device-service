@@ -789,8 +789,11 @@ exports.getValidHierarchyHelper = async ({ id }) => {
       data: {
         type: null,
         model_name: null,
+        model_id: null,
         variant_name: null,
+        variant_id: null,
         version_name: null,
+        version_id: null,
         status: null,
       },
       success: false,
