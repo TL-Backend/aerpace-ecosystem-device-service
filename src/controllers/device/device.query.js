@@ -209,7 +209,7 @@ SELECT
     adva.name AS variant_name,
     adva.id AS variant_id,
     null AS version_name,
-    null AS version_id
+    null AS version_id,
     adva.status AS status
 FROM
     aergov_device_variants AS adva
@@ -225,7 +225,7 @@ SELECT
     null AS variant_name,
     null AS variant_id,
     null AS version_name,
-    null AS version_id
+    null AS version_id,
     adm.status AS status
 FROM
     aergov_device_models AS adm
