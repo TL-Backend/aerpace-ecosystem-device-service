@@ -562,7 +562,7 @@ exports.editDevicesHelper = async (params) => {
       const validateVariantName = await aergov_device_variants.findAll({
         where: {
           name,
-          model_id: modelId,
+          model_id: variantData.dataValues.model_id,
           id: {
             [Op.ne]: variantId,
           },
