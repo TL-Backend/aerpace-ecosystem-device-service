@@ -520,11 +520,12 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
+      modelId = versionData.dataValues.model_id;
+      variantId = versionData.dataValues.variant_id;
       const validateVersions = await sequelize.query(checkDeviceData, {
         replacements: {
-          model_id: versionData.dataValues.model_id,
-          variant_id: versionData.dataValues.variant_id,
+          model_id: modelId,
+          variant_id: variantId,
           version_id: versionId,
         },
         type: sequelize.QueryTypes.SELECT,
@@ -558,11 +559,11 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
+      modelId = variantData.dataValues.model_id;
       const validateVariantName = await aergov_device_variants.findAll({
         where: {
           name,
-          model_id: variantData.dataValues.model_id,
+          model_id: modelId,
           id: {
             [Op.ne]: variantId,
           },
@@ -787,11 +788,8 @@ exports.getValidHierarchyHelper = async ({ id }) => {
       data: {
         type: null,
         model_name: null,
-        model_id: null,
         variant_name: null,
-        variant_id: null,
         version_name: null,
-        version_id: null,
         status: null,
       },
       success: false,
