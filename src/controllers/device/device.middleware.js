@@ -2,11 +2,7 @@ const { errorResponses, deviceTypes } = require('./device.constant');
 const { logger } = require('../../utils/logger');
 const { errorResponse } = require('../../utils/responseHandler');
 const { statusCodes } = require('../../utils/statusCode');
-const { errorMessages } = require('./device.constant');
 const { levelStarting } = require('../../utils/constant');
-const {
-  constants,
-} = require('../../services/aerpace-ecosystem-backend-db/src/commons/constant');
 
 exports.validateGetDevicesTypeInput = async (request, response, next) => {
   try {

@@ -65,7 +65,7 @@ exports.getDevicesList = async (request, response) => {
       request,
       response,
       code: statusCodes.STATUS_CODE_FAILURE,
-      message: error,
+      error: errorResponses.INTERNAL_ERROR,
     });
   }
 };
@@ -126,7 +126,7 @@ exports.editDevices = async (req, res, next) => {
     return errorResponse({
       req,
       res,
-      message: err.message,
+      error: errorResponses.INTERNAL_ERROR,
       code: statusCodes.STATUS_CODE_FAILURE,
     });
   }

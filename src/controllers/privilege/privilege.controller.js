@@ -9,7 +9,7 @@ const {
   listDeviceLevelPrivileges,
   listMasterPrivileges,
 } = require('./privilege.helper');
-const { errorResponses, successResponses } = require('./privilege.constant');
+const { errorResponses } = require('./privilege.constant');
 
 exports.addPersonalityPrivileges = async (req, res, next) => {
   try {
