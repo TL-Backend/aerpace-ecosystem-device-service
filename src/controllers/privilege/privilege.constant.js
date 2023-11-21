@@ -1,9 +1,9 @@
 const { levelStarting } = require('../../utils/constant');
 
 exports.successResponses = {
-  NO_DATA_FOUND: 'no data found',
-  PRIVILEGES_ADDED: 'privileges were added to a personality successfully',
-  DATA_FETCH_SUCCESSFUL: 'data fetched successfully',
+  NO_DATA_FOUND: 'No data found',
+  PRIVILEGES_ADDED: 'Privileges were added to a personality successfully',
+  DATA_FETCH_SUCCESSFUL: 'Data fetched successfully',
 };
 
 exports.errorResponses = {
@@ -33,16 +33,13 @@ exports.errorResponses = {
   },
   INVALID_ACTION_ID: `Improper list of action id's were given.`,
   PERSONALITY_ALREADY_EXISTS: `The given personality already exists, please try updating them. `,
-  INVALID_VERSION: 'invalid version id',
+  INVALID_VERSION: 'Invalid version id',
   LEVEL_ID_NOT_FOUND: 'Invalid id or data not found',
   INVALID_DEVICE_ID: (value) => {
-    return `invalid ${value} and it should be starting with ${levelStarting[value]}`;
+    return `Invalid ${value} and it should be starting with ${levelStarting[value]}`;
   },
-  INVALID_ID_TYPE: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT}`,
-  INVALID_MODEL_VARIANT_COMBINATION: 'invalid model or variant id',
-  INVALID_TYPE: 'invalid device type',
-  INVALID_MODEL_ID: 'invalid model id',
-  INVALID_VARIANT_ID: 'invalid variant id, or model_id is missing',
+  INVALID_ID_TYPE: `Invalid Id and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT}`,
+  INVALID_TYPE: 'Invalid device type',
   INVALID_INPUT_ID: `Invalid Id and and it should be starting with ${levelStarting.MODEL} or ${levelStarting.VARIANT} or ${levelStarting.VERSION}`,
 };
 

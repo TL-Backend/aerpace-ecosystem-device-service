@@ -7,7 +7,6 @@ const {
   aergov_device_versions,
   aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { dbTables, levelStarting } = require('../../utils/constant');
 const {
   getPrivileges,
   filterConditionQuery,
