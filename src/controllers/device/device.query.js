@@ -71,7 +71,7 @@ exports.verifyActionsById = `
            ELSE false
        END AS result
   FROM actions_to_check itc
-       LEFT JOIN aergov_device_master_actions as af ON itc.action = af.id
+       LEFT JOIN ${dbTables.DEVICE_MASTER_ACTIONS} as af ON itc.action = af.id
   WHERE af.device_type = :type;
 `;
 
