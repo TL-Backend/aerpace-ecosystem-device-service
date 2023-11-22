@@ -9,7 +9,7 @@ const {
   listDeviceLevelPrivileges,
   listMasterPrivileges,
 } = require('./privilege.helper');
-const { errorResponses, successResponses } = require('./privilege.constant');
+const { errorResponses } = require('./privilege.constant');
 
 exports.addPersonalityPrivileges = async (req, res, next) => {
   try {
@@ -73,12 +73,11 @@ exports.getDeviceLevelPrivileges = async (req, res, next) => {
 
 exports.listMasterPrivileges = async (req, res, next) => {
   try {
-    let { type, model_id: modelId, variant_id: variantId } = req.query;
+    let { type, id } = req.query;
 
     let { success, errorCode, message, data } = await listMasterPrivileges({
       type,
-      modelId,
-      variantId,
+      id,
     });
     if (!success) {
       return errorResponse({

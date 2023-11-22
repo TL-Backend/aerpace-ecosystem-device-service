@@ -69,9 +69,9 @@ SELECT
         )
     ) AS result
 FROM
-    aergov_device_actions AS ada
-    LEFT JOIN aergov_device_master_actions AS adma ON adma.id = ada.action_id
-    LEFT JOIN aergov_action_categories AS aac ON aac.id = ada.category_id -- WHERE
+    ${dbTables.DEVICE_ACTIONS} AS ada
+    LEFT JOIN ${dbTables.DEVICE_MASTER_ACTIONS} AS adma ON adma.id = ada.action_id
+    LEFT JOIN ${dbTables.ACTION_CATEGORIES} AS aac ON aac.id = ada.category_id -- WHERE
 WHERE (
         ada.model_id = :model_id
         AND ada.variant_id IS NULL
@@ -197,17 +197,13 @@ exports.validateActionIds = `
     FROM master_actions_count, actions_count;
 `;
 
-exports.modelDataQuery = `SELECT * from ${dbTables.DEVICE_MODELS_TABLE} WHERE id = :id`;
-exports.variantDataQuery = `SELECT * from ${dbTables.DEVICE_VARIANT_TABLE} WHERE id = :id`;
-exports.versionDataQuery = `SELECT * from ${dbTables.DEVICE_VERSION_TABLE} WHERE id = :id`;
-
 exports.modelVariantVersionDataQuery = `
 SELECT
     'VERSION' AS level,
     model_id AS model_id,
     variant_id AS variant_id,
     id AS version_id
-FROM aergov_device_versions
+FROM ${dbTables.DEVICE_VERSION_TABLE}
 WHERE id = :id
 UNION ALL
 SELECT
@@ -215,7 +211,7 @@ SELECT
     model_id AS model_id,
     id AS variant_id,
     NULL AS version_id
-FROM aergov_device_variants
+FROM ${dbTables.DEVICE_VARIANT_TABLE}
 WHERE id = :id
 UNION ALL
 SELECT
@@ -223,6 +219,6 @@ SELECT
     id AS model_id,
     NULL AS variant_id,
     NULL AS version_id
-FROM aergov_device_models
+FROM ${dbTables.DEVICE_MODELS_TABLE}
 WHERE id = :id
 `;

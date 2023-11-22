@@ -115,7 +115,7 @@ exports.listDevicePrivilegesValidation = async (req, res, next) => {
 exports.listMasterPrivilegesValidation = async (req, res, next) => {
   try {
     const errorsList = [];
-    const { type, model_id: modelId, variant_id: variantId } = req.query;
+    const { type, id } = req.query;
 
     if (
       !type ||
@@ -124,16 +124,13 @@ exports.listMasterPrivilegesValidation = async (req, res, next) => {
     ) {
       errorsList.push(errorResponses.INVALID_TYPE);
     }
-    if (modelId && (typeof modelId !== 'string' || !modelId.startsWith('m_'))) {
-      errorsList.push(errorResponses.INVALID_MODEL_ID);
-    }
     if (
-      variantId &&
-      (typeof variantId !== 'string' ||
-        !variantId.startsWith('va_') ||
-        !modelId)
+      id &&
+      (typeof id !== 'string' ||
+        (!id.startsWith(levelStarting.MODEL) &&
+          !id.startsWith(levelStarting.VARIANT)))
     ) {
-      errorsList.push(errorResponses.INVALID_VARIANT_ID);
+      errorsList.push(errorResponses.INVALID_ID_TYPE);
     }
     if (errorsList.length) {
       throw errorsList.join(', ');

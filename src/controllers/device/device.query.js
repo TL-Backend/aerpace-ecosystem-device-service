@@ -24,36 +24,37 @@ exports.getAllDevicesFromType = `SELECT
                                                     'name', dvv.name,
                                                     'status', dvv.status
                                                 )
+                                                ORDER BY dvv.updated_at DESC
                                             ) 
-                                            FROM aergov_device_versions AS dvv
+                                            FROM ${dbTables.DEVICE_VERSION_TABLE} AS dvv
                                             WHERE dvv.variant_id = dv.id
                                         ),
                                         '[]'
                                     )
                                 )
+                                ORDER BY dv.updated_at DESC
                             ) 
-                            FROM aergov_device_variants AS dv
+                            FROM ${dbTables.DEVICE_VARIANT_TABLE} AS dv
                             WHERE dv.model_id = dm.id
                         ),
                         '[]'
                     )
                 )
             )
+            ORDER BY dm.updated_at DESC
         ),
         '[]'
     ) AS data
 FROM ${dbTables.DEVICE_MODELS_TABLE} AS dm
 WHERE dm.device_type = :device_type`;
 
-exports.queries = {
-  getDeviceCount: `SELECT
+exports.getDeviceCount = `SELECT
     adm.device_type AS type,
   COUNT(*) AS model_count,
   (SELECT COUNT(*) FROM ${dbTables.DEVICE_VERSION_TABLE} AS adv WHERE device_type = adm.device_type AND adv.status = '${status.ACTIVE}' ) AS version_count,
   (SELECT COUNT(*) FROM ${dbTables.DEVICE_VARIANT_TABLE} AS adva WHERE device_type = adm.device_type AND adva.status = '${status.ACTIVE}' ) AS variant_count
   FROM  ${dbTables.DEVICE_MODELS_TABLE} AS adm WHERE adm.status = '${status.ACTIVE}'
-  GROUP BY adm.device_type;`,
-};
+  GROUP BY adm.device_type;`;
 
 exports.getCategoriesQuery = `
      SELECT id, category_name, category_identifier, device_type
@@ -70,7 +71,7 @@ exports.verifyActionsById = `
            ELSE false
        END AS result
   FROM actions_to_check itc
-       LEFT JOIN aergov_device_master_actions as af ON itc.action = af.id
+       LEFT JOIN ${dbTables.DEVICE_MASTER_ACTIONS} as af ON itc.action = af.id
   WHERE af.device_type = :type;
 `;
 
@@ -185,13 +186,16 @@ exports.getVersionData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     adva.name AS variant_name,
+    adva.id AS variant_id,
     adve.name AS version_name,
+    adve.id AS version_id,
     adve.status AS status
 FROM
-    aergov_device_versions AS adve
-    LEFT JOIN aergov_device_models AS adm ON adm.id = adve.model_id
-    LEFT JOIN aergov_device_variants AS adva ON adva.id = adve.variant_id
+    ${dbTables.DEVICE_VERSION_TABLE} AS adve
+    LEFT JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adm.id = adve.model_id
+    LEFT JOIN ${dbTables.DEVICE_VARIANT_TABLE} AS adva ON adva.id = adve.variant_id
 WHERE adve.id = :id
 `;
 
@@ -199,12 +203,15 @@ exports.getVariantData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     adva.name AS variant_name,
+    adva.id AS variant_id,
     null AS version_name,
+    null AS version_id,
     adva.status AS status
 FROM
-    aergov_device_variants AS adva
-    LEFT JOIN aergov_device_models AS adm ON adm.id = adva.model_id
+    ${dbTables.DEVICE_VARIANT_TABLE} AS adva
+    LEFT JOIN ${dbTables.DEVICE_MODELS_TABLE} AS adm ON adm.id = adva.model_id
 WHERE adva.id = :id
 `;
 
@@ -212,10 +219,13 @@ exports.getModelData = `
 SELECT
     adm.device_type AS type,
     adm.name AS model_name,
+    adm.id AS model_id,
     null AS variant_name,
+    null AS variant_id,
     null AS version_name,
+    null AS version_id,
     adm.status AS status
 FROM
-    aergov_device_models AS adm
+  ${dbTables.DEVICE_MODELS_TABLE} AS adm
 WHERE adm.id = :id
 `;

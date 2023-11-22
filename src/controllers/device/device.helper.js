@@ -11,6 +11,7 @@ const {
   getVersionData,
   getVariantData,
   getModelData,
+  getDeviceCount,
 } = require('./device.query');
 const { statusCodes } = require('../../utils/statusCode');
 const {
@@ -20,16 +21,13 @@ const {
 } = require('./device.constant');
 const {
   sequelize,
-  Sequelize,
   aergov_device_versions,
   aergov_device_models,
   aergov_device_variants,
   aergov_device_actions,
-  aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
 const { logger } = require('../../utils/logger');
 const { eachLimitPromise } = require('../../utils/utility');
-const { queries } = require('./device.query');
 const { levelStarting } = require('../../utils/constant');
 const { Op } = require('sequelize');
 
@@ -106,7 +104,6 @@ exports.addDeviceActions = async ({
   versionId,
   privileges,
   type,
-  dataValues,
 }) => {
   const transaction = await sequelize.transaction();
   try {
@@ -454,10 +451,10 @@ exports.getDevicesDataHelper = async ({ deviceType }) => {
 
 exports.getDeviceTypes = async () => {
   try {
-    const counts = await sequelize.query(queries.getDeviceCount);
+    const counts = await sequelize.query(getDeviceCount);
     return {
       success: true,
-      message: successResponses.COUNT_FETCH_SUCCESSFULL,
+      message: successResponses.COUNT_FETCH_SUCCESSFUL,
       data: counts[0],
     };
   } catch (err) {
@@ -515,16 +512,17 @@ exports.editDevicesHelper = async (params) => {
         await transaction.rollback();
         return {
           success: false,
-          message: errorResponses.NAME_EXISTS,
+          message: errorResponses.VERSION_NAME_EXISTS,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           data: {},
         };
       }
-
+      modelId = versionData.dataValues.model_id;
+      variantId = versionData.dataValues.variant_id;
       const validateVersions = await sequelize.query(checkDeviceData, {
         replacements: {
-          model_id: versionData.dataValues.model_id,
-          variant_id: versionData.dataValues.variant_id,
+          model_id: modelId,
+          variant_id: variantId,
           version_id: versionId,
         },
         type: sequelize.QueryTypes.SELECT,
@@ -558,7 +556,7 @@ exports.editDevicesHelper = async (params) => {
           data: {},
         };
       }
-
+      modelId = variantData.dataValues.model_id;
       const validateVariantName = await aergov_device_variants.findAll({
         where: {
           name,
@@ -573,7 +571,7 @@ exports.editDevicesHelper = async (params) => {
         await transaction.rollback();
         return {
           success: false,
-          message: errorResponses.NAME_EXISTS,
+          message: errorResponses.VARIANT_NAME_EXISTS,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           data: {},
         };
@@ -630,7 +628,7 @@ exports.editDevicesHelper = async (params) => {
         await transaction.rollback();
         return {
           success: false,
-          message: errorResponses.NAME_EXISTS,
+          message: errorResponses.MODEL_NAME_EXISTS,
           errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
           data: {},
         };
@@ -726,7 +724,7 @@ exports.getPersonalityPrivilegesHelper = async ({ params }) => {
     return {
       success: true,
       errorCode: statusCodes.STATUS_CODE_SUCCESS,
-      message: successResponses.DATA_FETCH_SUCCESSFULL,
+      message: successResponses.DATA_FETCH_SUCCESSFUL,
       data: {
         personalities: personalityData[0][0].personalities
           ? personalityData[0][0].personalities

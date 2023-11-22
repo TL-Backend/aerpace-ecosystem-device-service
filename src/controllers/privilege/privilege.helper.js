@@ -7,25 +7,14 @@ const {
   aergov_device_versions,
   aergov_device_model_privileges,
 } = require('../../services/aerpace-ecosystem-backend-db/src/databases/postgresql/models');
-const { dbTables, levelStarting } = require('../../utils/constant');
 const {
   getPrivileges,
-  getDeviceVariants,
-  conditions,
   filterConditionQuery,
   getDevicePrivileges,
   validateActionIds,
   getActions,
-  versionDataQuery,
-  variantDataQuery,
-  modelDataQuery,
   modelVariantVersionDataQuery,
 } = require('./privilege.query');
-const {
-  getVersionData,
-  getVariantData,
-  getModelData,
-} = require('../device/device.query');
 const { status } = require('../device/device.constant');
 
 exports.addPrivilegesToPersonality = async (params) => {
@@ -280,7 +269,7 @@ exports.getActionDetails = async ({
   }
 };
 
-exports.listDeviceLevelPrivileges = async ({ id }) => {
+exports.getModelVariantVersionDetails = async ({ id }) => {
   try {
     let modelId;
     let variantId;
@@ -305,6 +294,39 @@ exports.listDeviceLevelPrivileges = async ({ id }) => {
     modelId = modelVariantVersionData[0][0].model_id;
     variantId = modelVariantVersionData[0][0].variant_id;
     versionId = modelVariantVersionData[0][0].version_id;
+
+    return {
+      success: true,
+      data: {
+        modelId,
+        variantId,
+        versionId,
+      },
+    };
+  } catch (err) {
+    logger.error(err);
+    return {
+      success: false,
+      errorCode: statusCodes.STATUS_CODE_FAILURE,
+      message: err.message,
+      data: null,
+    };
+  }
+};
+
+exports.listDeviceLevelPrivileges = async ({ id }) => {
+  try {
+    const { success, errorCode, message, data } =
+      await this.getModelVariantVersionDetails({ id });
+    if (!success) {
+      return {
+        success: false,
+        errorCode,
+        message,
+        data,
+      };
+    }
+    const { modelId, variantId, versionId } = data;
 
     const privilegesData = await sequelize.query(getDevicePrivileges, {
       replacements: {
@@ -340,17 +362,6 @@ exports.listDeviceLevelPrivileges = async ({ id }) => {
   }
 };
 
-const validateCondition = async ({ checkCondition, modelId, variantId }) => {
-  const conditionStatus = await sequelize.query(
-    getDeviceVariants.replace('{{condition}}', checkCondition),
-    {
-      replacements: { model_id: modelId, variant_id: variantId },
-      type: sequelize.QueryTypes.SELECT,
-    },
-  );
-  return conditionStatus[0].exists;
-};
-
 const getPrivilegesData = async ({ queryCondition, type }) => {
   const privilegesData = await sequelize.query(
     getPrivileges.replace(`{{queryCondition}}`, queryCondition),
@@ -362,19 +373,34 @@ const getPrivilegesData = async ({ queryCondition, type }) => {
   return privilegesData;
 };
 
-exports.listMasterPrivileges = async ({ type, modelId, variantId }) => {
+exports.listMasterPrivileges = async ({ type, id }) => {
   try {
     type = type.trim();
-    modelId = modelId ? modelId.trim() : null;
-    variantId = variantId ? variantId.trim() : null;
+    let modelVariantVersionData = {
+      modelId: null,
+      variantId: null,
+    };
+    if (id) {
+      const { success, errorCode, message, data } =
+        await this.getModelVariantVersionDetails({ id });
+      if (!success) {
+        return {
+          success: false,
+          errorCode,
+          message,
+          data: null,
+        };
+      }
+      modelVariantVersionData = data;
+    }
+    const { modelId, variantId } = modelVariantVersionData;
 
-    let filterCondition, joinCondition;
+    let filterCondition;
     if (type && modelId && variantId) {
       filterCondition = filterConditionQuery(modelId, variantId);
     } else if (type && modelId) {
       filterCondition = filterConditionQuery(modelId, variantId);
     } else if (type) {
-      joinCondition = '';
       filterCondition = '';
     }
 

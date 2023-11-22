@@ -65,7 +65,7 @@ exports.getDevicesList = async (request, response) => {
       request,
       response,
       code: statusCodes.STATUS_CODE_FAILURE,
-      message: error,
+      error: errorResponses.INTERNAL_ERROR,
     });
   }
 };
@@ -86,7 +86,7 @@ exports.listDevicesTypes = async (req, res, next) => {
       data: {
         device_types: data,
       },
-      message: successResponses.COUNT_FETCH_SUCCESSFULL,
+      message: successResponses.COUNT_FETCH_SUCCESSFUL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {
@@ -126,7 +126,7 @@ exports.editDevices = async (req, res, next) => {
     return errorResponse({
       req,
       res,
-      message: err.message,
+      error: errorResponses.INTERNAL_ERROR,
       code: statusCodes.STATUS_CODE_FAILURE,
     });
   }
@@ -147,7 +147,7 @@ exports.getPersonalityDetails = async (req, res, next) => {
     return successResponse({
       res,
       data,
-      message: successResponses.COUNT_FETCH_SUCCESSFULL,
+      message: successResponses.COUNT_FETCH_SUCCESSFUL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {
@@ -179,7 +179,7 @@ exports.getValidHierarchy = async (req, res, next) => {
     return successResponse({
       res,
       data,
-      message: successResponses.DATA_FETCH_SUCCESSFULL,
+      message: successResponses.DATA_FETCH_SUCCESSFUL,
       code: statusCodes.STATUS_CODE_SUCCESS,
     });
   } catch (err) {
