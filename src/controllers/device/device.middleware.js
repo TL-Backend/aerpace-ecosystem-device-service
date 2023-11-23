@@ -123,7 +123,7 @@ exports.validateEditDeviceInput = async (req, res, next) => {
       req,
       res,
       error: err,
-      message: err,
+      message: errorResponses.SOMETHING_WENT_WRONG,
       code: statusCodes.STATUS_CODE_INVALID_FORMAT,
     });
   }
@@ -133,13 +133,12 @@ exports.validateAddAndEditCommonInputs = ({
   errorsList,
   modelId,
   variantId,
-  status,
   type,
   name,
   privileges,
 }) => {
   try {
-    if (name && typeof name !== 'string') {
+    if (!name && typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
 
@@ -155,9 +154,7 @@ exports.validateAddAndEditCommonInputs = ({
     }
 
     if (!privileges || typeof privileges !== 'object') {
-      errorsList.push(
-        errorResponses.INVALID_STRING_OR_MISSING_ERROR('privileges'),
-      );
+      errorsList.push(errorResponses.INVALID_PRIVILEGES);
     }
 
     if (privileges) {
