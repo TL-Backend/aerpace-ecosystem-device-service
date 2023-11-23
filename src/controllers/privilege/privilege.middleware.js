@@ -23,7 +23,7 @@ exports.validateAddPersonalityPrivileges = async (req, res, next) => {
       typeof type !== 'string' ||
       !constants.DEVICE_TYPES.includes(type)
     ) {
-      errorList.push(errorResponses.INVALID_DEVICE_TYPE('type'));
+      errorList.push(errorResponses.INVALID_DEVICE_TYPE);
     }
     if (
       !modelId ||

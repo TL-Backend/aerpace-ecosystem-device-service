@@ -8,9 +8,7 @@ exports.successResponses = {
 
 exports.errorResponses = {
   INTERNAL_ERROR: 'internal error',
-  INVALID_DEVICE_TYPE: (value) => {
-    return `Invalid device type ${value}`;
-  },
+  INVALID_DEVICE_TYPE: `Invalid device type`,
   INVALID_STRING_OR_MISSING_ERROR: (value) => {
     return `${value} cannot be empty and it must be an character(s)`;
   },
@@ -21,7 +19,7 @@ exports.errorResponses = {
     return `${value} cannot be empty.`;
   },
   INVALID_PERSONALITY: (value) => {
-    return `Invalid personality: ${value} is sent in privileges`;
+    return `Invalid personality: ${value || 'empty'} is sent in privileges`;
   },
   INVALID_ACTIONS: (value) => {
     return `List of actions should be present  for the personality: ${value} `;
