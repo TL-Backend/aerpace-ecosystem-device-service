@@ -138,7 +138,7 @@ exports.validateAddAndEditCommonInputs = ({
   privileges,
 }) => {
   try {
-    if (!name && typeof name !== 'string') {
+    if (!name || typeof name !== 'string') {
       errorsList.push(errorResponses.INVALID_STRING_OR_MISSING_ERROR('name'));
     }
 
