@@ -49,7 +49,7 @@ const createDeviceVersion = async ({
       await transaction.rollback();
       return {
         success: false,
-        message: errorResponses.NAME_EXISTS,
+        message: errorResponses.VERSION_NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
         data: {},
       };
@@ -219,7 +219,7 @@ const createDeviceVariant = async ({
       await transaction.rollback();
       return {
         success: false,
-        message: errorResponses.NAME_EXISTS,
+        message: errorResponses.VARIANT_NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
         data: {},
       };
@@ -277,7 +277,7 @@ const createDeviceModel = async ({ name, status, type, privileges }) => {
       await transaction.rollback();
       return {
         success: false,
-        message: errorResponses.NAME_EXISTS,
+        message: errorResponses.MODEL_NAME_EXISTS,
         errorCode: statusCodes.STATUS_CODE_INVALID_FORMAT,
         data: {},
       };
