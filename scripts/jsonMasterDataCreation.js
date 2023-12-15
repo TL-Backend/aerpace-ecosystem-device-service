@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const XLSX = require('xlsx');
 
@@ -11,9 +12,7 @@ exports.createJsonMasterData = () => {
     const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
     let headersMissing = false;
 
-    for (let i = 0; i < sheetData.length; i++) {
-      const currentItem = sheetData[i];
-
+    for (let currentItem of sheetData) {
       if (
         currentItem['Device type'] === undefined ||
         currentItem['Action name'] === undefined ||
@@ -47,10 +46,7 @@ exports.createJsonMasterData = () => {
       };
     }
 
-    fs.writeFileSync(
-      'masterDataJsonFile.json',
-      JSON.stringify(sheetData, null, 2),
-    );
+    fs.writeFileSync(process.env.fileName, JSON.stringify(sheetData, null, 2));
     console.log('Conversion successful. JSON file created: output.json');
     return {
       success: true,

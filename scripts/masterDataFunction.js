@@ -7,7 +7,7 @@ const {
 const { eachLimitPromise } = require('../src/utils/utility');
 const { createJsonMasterData } = require('./jsonMasterDataCreation');
 
-const jsonData = require('./masterDataJsonFile.json');
+const jsonData = require(process.env.fileName);
 
 const writeMasterDataToDb = async (jsonData) => {
   const transaction = await sequelize.transaction();
