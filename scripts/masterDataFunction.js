@@ -30,7 +30,7 @@ const writeMasterDataToDb = async (jsonData) => {
         transaction,
       });
 
-      const actionData = await aergov_device_master_actions.findOrCreate({
+      await aergov_device_master_actions.findOrCreate({
         where: { action_identifier: currentItem.action_identifier },
         defaults: {
           category_id: categoryData[0].id,
