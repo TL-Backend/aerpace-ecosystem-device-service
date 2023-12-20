@@ -22,7 +22,7 @@ exports.createJsonMasterData = () => {
         break;
       }
 
-      currentItem.device_type = currentItem['Device type'];
+      currentItem.device_type = currentItem['Device type'].toUpperCase();
       currentItem.category_name = currentItem['Category name'];
       currentItem.category_identifier = `${currentItem.category_name
         .trim()
