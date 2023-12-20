@@ -1,0 +1,8 @@
+DB_USERNAME=""
+DB_HOST=""
+DB_PASSWORD=""
+DB_PORT=""
+DB_DATABASE=""
+
+jsonfilePath = ""    // file path where json will be created
+dataFilePath = ""    // file path where the incomming master data to be presented

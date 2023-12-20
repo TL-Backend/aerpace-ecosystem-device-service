@@ -7,9 +7,7 @@ const {
 const { eachLimitPromise } = require('../src/utils/utility');
 const { createJsonMasterData } = require('./jsonMasterDataCreation');
 
-const jsonData = require(process.env.fileName);
-
-const writeMasterDataToDb = async (jsonData) => {
+const writeMasterDataToDb = async () => {
   const transaction = await sequelize.transaction();
   try {
     const { success, message } = createJsonMasterData();
@@ -18,6 +16,7 @@ const writeMasterDataToDb = async (jsonData) => {
       await transaction.rollback();
       return;
     }
+    const jsonData = require(process.env.jsonfilePath);
 
     await eachLimitPromise(jsonData, 1, async (currentItem) => {
       const categoryData = await aergov_action_categories.findOrCreate({
@@ -50,4 +49,4 @@ const writeMasterDataToDb = async (jsonData) => {
   }
 };
 
-writeMasterDataToDb(jsonData);
+writeMasterDataToDb();

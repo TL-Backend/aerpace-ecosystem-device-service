@@ -4,7 +4,7 @@ const XLSX = require('xlsx');
 
 exports.createJsonMasterData = () => {
   try {
-    const excelFilePath = 'masterData.xlsx';
+    const excelFilePath = process.env.dataFilePath;
 
     const workbook = XLSX.readFile(excelFilePath);
     const sheetName = workbook.SheetNames[0];
@@ -24,9 +24,15 @@ exports.createJsonMasterData = () => {
 
       currentItem.device_type = currentItem['Device type'];
       currentItem.category_name = currentItem['Category name'];
-      currentItem.category_identifier = `${currentItem.category_name.toUpperCase()}`;
+      currentItem.category_identifier = `${currentItem.category_name
+        .trim()
+        .replace(/ /g, '_')
+        .toUpperCase()}`;
       currentItem.action_name = currentItem['Action name'];
-      currentItem.action_identifier = `${currentItem.category_name.toUpperCase()}#${currentItem.action_name
+      currentItem.action_identifier = `${currentItem.category_name
+        .trim()
+        .replace(/ /g, '_')
+        .toUpperCase()}#${currentItem.action_name
         .trim()
         .replace(/ /g, '_')
         .toUpperCase()}`;
@@ -46,7 +52,10 @@ exports.createJsonMasterData = () => {
       };
     }
 
-    fs.writeFileSync(process.env.fileName, JSON.stringify(sheetData, null, 2));
+    fs.writeFileSync(
+      process.env.jsonfilePath,
+      JSON.stringify(sheetData, null, 2),
+    );
     console.log('Conversion successful. JSON file created: output.json');
     return {
       success: true,
