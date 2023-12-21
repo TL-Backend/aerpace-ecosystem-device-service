@@ -149,7 +149,11 @@ exports.validateAddAndEditCommonInputs = ({
       errorsList.push(errorResponses.INVALID_VARIANT_ID_TYPE);
     }
 
-    if (!type || typeof type !== 'string' || type !== deviceTypes.CAR) {
+    if (
+      !type ||
+      typeof type !== 'string' ||
+      !Object.values(deviceTypes).includes(type)
+    ) {
       errorsList.push(errorResponses.MISSING_INVALID_DEVICE_TYPE);
     }
 

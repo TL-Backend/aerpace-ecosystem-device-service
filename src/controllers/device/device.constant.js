@@ -11,6 +11,7 @@ exports.successResponses = {
 
 exports.deviceTypes = {
   CAR: `CAR`,
+  DRONE: `DRONE`,
 };
 
 exports.errorResponses = {
